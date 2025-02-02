@@ -20,7 +20,7 @@ const Landing = () => {
 
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-semibold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-600">
-            Streamline Your Content Creation Workflow
+            Make content creation faster not harder
           </h1>
           <p className="text-xl text-gray-600 mb-8">
             AI-powered tools to help content creators and teams collaborate, create, and grow their audience faster.
