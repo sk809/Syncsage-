@@ -4,13 +4,11 @@ import { PerformanceChart } from "@/components/Dashboard/PerformanceChart";
 import { TaskList } from "@/components/Dashboard/TaskList";
 import { SoundPlayer } from "@/components/Relaxation/SoundPlayer";
 import { Activity, Film, Users } from "lucide-react";
+import "@fontsource/inter/400.css"; // Regular weight
+import "@fontsource/inter/500.css"; // Medium weight
+import "@fontsource/inter/600.css"; // Semi-bold weight
 
 const Index = () => {
-  useEffect(() => {
-    // Load Inter font
-    import("@fontsource/inter");
-  }, []);
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container py-8">
