@@ -4,7 +4,7 @@ import { ArrowRight, Zap, Users, Brain, BarChart, Upload, Bot, ListChecks, Gauge
 import { Link } from "react-router-dom";
 
 const Landing = () => {
-  return <div className="min-h-screen bg-gradient-to-b from-[#8B5CF6] via-[#6E59A5] to-[#1A1F2C]">
+  return <div className="min-h-screen bg-gradient-to-b from-[#1A1F2C] via-[#121520] to-black">
       {/* Hero Section */}
       <div className="container mx-auto px-4 pt-20 pb-16">
         <nav className="flex justify-between items-center mb-16">
