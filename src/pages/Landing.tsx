@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Zap, Users, Brain, BarChart, Upload, Robot, ListChecks, Gauge, Bot, Share2, MessageCircle } from "lucide-react";
+import { ArrowRight, Zap, Users, Brain, BarChart, Upload, Bot, ListChecks, Gauge, Share2, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+
 const Landing = () => {
   return <div className="min-h-screen bg-gradient-to-b from-[#8B5CF6] via-[#6E59A5] to-[#1A1F2C]">
       {/* Hero Section */}
@@ -147,4 +148,5 @@ const Landing = () => {
       </footer>
     </div>;
 };
+
 export default Landing;
