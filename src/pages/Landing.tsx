@@ -135,7 +135,7 @@ const Landing = () => {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-white/10">
+      <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
@@ -145,7 +145,7 @@ const Landing = () => {
             <p className="text-gray-300">© 2024 CreatorFlow. All rights reserved.</p>
           </div>
         </div>
-      </footer>
+      </div>
     </div>;
 };
 
