@@ -1,9 +1,26 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Zap, Users, Brain, BarChart, Upload, Bot, ListChecks, Gauge, Share2, MessageCircle } from "lucide-react";
+import { ArrowRight, Zap, Users, Brain, BarChart, Upload, Bot, ListChecks, Gauge, Share2, MessageCircle, Send } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const Landing = () => {
+  const [comment, setComment] = useState("");
+  const { toast } = useToast();
+
+  const handleSubmitComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (comment.trim()) {
+      toast({
+        title: "Thank you for your feedback!",
+        description: "Your thoughts have been submitted successfully.",
+      });
+      setComment("");
+    }
+  };
+
   return <div className="min-h-screen bg-gradient-to-b from-[#1A1F2C] via-[#121520] to-black">
       {/* Hero Section */}
       <div className="container mx-auto px-4 pt-20 pb-16">
@@ -24,7 +41,7 @@ const Landing = () => {
           <p className="text-xl text-gray-200 mb-8">
             AI-powered tools to help content creators and teams collaborate, create, and grow their audience faster.
           </p>
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-4 justify-center mb-16">
             <Link to="/dashboard">
               <Button size="lg" className="bg-white text-purple-700 hover:bg-white/90 gap-2">
                 Get Started <ArrowRight className="w-4 h-4" />
@@ -33,6 +50,26 @@ const Landing = () => {
             <Button size="lg" variant="outline" className="border-white/20 text-purple-600 bg-zinc-50 px-[46px] text-base">
               Watch Demo
             </Button>
+          </div>
+
+          {/* Leave Your Thoughts Section */}
+          <div className="max-w-2xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10">
+            <h2 className="text-2xl font-semibold text-white mb-6">Leave Your Thoughts</h2>
+            <form onSubmit={handleSubmitComment} className="space-y-4">
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Share your feedback or suggestions..."
+                className="w-full h-32 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+              <Button 
+                type="submit" 
+                className="bg-purple-600 hover:bg-purple-700 text-white gap-2"
+                disabled={!comment.trim()}
+              >
+                Submit <Send className="w-4 h-4" />
+              </Button>
+            </form>
           </div>
         </div>
       </div>
