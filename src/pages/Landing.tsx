@@ -1,31 +1,15 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { 
-  ArrowRight, 
-  Zap, 
-  Users, 
-  Brain, 
-  BarChart, 
-  Upload, 
-  Robot, 
-  ListChecks,
-  Gauge,
-  Bot,
-  Share2,
-  MessageCircle
-} from "lucide-react";
+import { ArrowRight, Zap, Users, Brain, BarChart, Upload, Robot, ListChecks, Gauge, Bot, Share2, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const Landing = () => {
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-[#8B5CF6] via-[#6E59A5] to-[#1A1F2C]">
+  return <div className="min-h-screen bg-gradient-to-b from-[#8B5CF6] via-[#6E59A5] to-[#1A1F2C]">
       {/* Hero Section */}
       <div className="container mx-auto px-4 pt-20 pb-16">
         <nav className="flex justify-between items-center mb-16">
           <div className="flex items-center gap-2">
             <Zap className="w-8 h-8 text-white" />
-            <span className="text-xl font-semibold text-white">CreatorFlow</span>
+            <span className="text-xl font-semibold text-white">SyncSage</span>
           </div>
           <Link to="/dashboard">
             <Button variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20">Sign In</Button>
@@ -45,7 +29,7 @@ const Landing = () => {
                 Get Started <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10">
+            <Button size="lg" variant="outline" className="border-white/20 text-purple-600 bg-zinc-50 px-[46px] text-base">
               Watch Demo
             </Button>
           </div>
@@ -161,8 +145,6 @@ const Landing = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
