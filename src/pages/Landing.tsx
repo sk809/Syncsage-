@@ -1,6 +1,20 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Zap, Users, Brain, BarChart } from "lucide-react";
+import { 
+  ArrowRight, 
+  Zap, 
+  Users, 
+  Brain, 
+  BarChart, 
+  Upload, 
+  Robot, 
+  ListChecks,
+  Gauge,
+  Bot,
+  Share2,
+  MessageCircle
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Landing = () => {
@@ -43,10 +57,18 @@ const Landing = () => {
         <h2 className="text-3xl font-semibold text-center mb-12 text-white">Everything You Need to Create Better Content</h2>
         <div className="grid md:grid-cols-3 gap-8">
           <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
-            <Brain className="w-12 h-12 text-white mb-4" />
-            <h3 className="text-xl font-semibold mb-2 text-white">AI-Powered Creation</h3>
+            <Gauge className="w-12 h-12 text-white mb-4" />
+            <h3 className="text-xl font-semibold mb-2 text-white">Integrated Workflow</h3>
             <p className="text-gray-300">
-              Generate short-form content, captions, and hashtags automatically with our AI tools.
+              All-in-one dashboard for content generation, editing, team collaboration, and analytics. Upload to multiple platforms with one click.
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
+            <Brain className="w-12 h-12 text-white mb-4" />
+            <h3 className="text-xl font-semibold mb-2 text-white">Advanced AI Automation</h3>
+            <p className="text-gray-300">
+              Auto-generate shorts, extract key moments, create captions, and get AI-powered hashtag suggestions.
             </p>
           </Card>
 
@@ -54,17 +76,76 @@ const Landing = () => {
             <Users className="w-12 h-12 text-white mb-4" />
             <h3 className="text-xl font-semibold mb-2 text-white">Team Collaboration</h3>
             <p className="text-gray-300">
-              Work seamlessly with your team, assign tasks, and manage content approval workflows.
+              Real-time editing, team chat, feedback system, and streamlined approval workflows.
             </p>
           </Card>
 
           <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
-            <BarChart className="w-12 h-12 text-white mb-4" />
-            <h3 className="text-xl font-semibold mb-2 text-white">Analytics & Insights</h3>
+            <Zap className="w-12 h-12 text-white mb-4" />
+            <h3 className="text-xl font-semibold mb-2 text-white">Mind-Relaxation</h3>
             <p className="text-gray-300">
-              Track performance across platforms and get AI-powered recommendations.
+              Built-in binaural beats, nature sounds, and smart break reminders for creative well-being.
             </p>
           </Card>
+
+          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
+            <Bot className="w-12 h-12 text-white mb-4" />
+            <h3 className="text-xl font-semibold mb-2 text-white">Sage Bot</h3>
+            <p className="text-gray-300">
+              Smart assistant that helps locate and share media files from your folders in real-time.
+            </p>
+          </Card>
+
+          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
+            <Share2 className="w-12 h-12 text-white mb-4" />
+            <h3 className="text-xl font-semibold mb-2 text-white">Saved Environment</h3>
+            <p className="text-gray-300">
+              Organize and save ideas, posts, and content from any platform through our browser extension.
+            </p>
+          </Card>
+        </div>
+      </div>
+
+      {/* Additional Features Section */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="bg-white/10 rounded-xl p-8 border border-white/20">
+            <ListChecks className="w-12 h-12 text-white mb-4" />
+            <h3 className="text-2xl font-semibold mb-4 text-white">Smart Task Management</h3>
+            <ul className="space-y-3 text-gray-300">
+              <li className="flex items-center gap-2">
+                <ArrowRight className="w-4 h-4" />
+                Track content ideas and upcoming projects
+              </li>
+              <li className="flex items-center gap-2">
+                <ArrowRight className="w-4 h-4" />
+                Monitor content status (draft, published)
+              </li>
+              <li className="flex items-center gap-2">
+                <ArrowRight className="w-4 h-4" />
+                Schedule team meetings and deadlines
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-white/10 rounded-xl p-8 border border-white/20">
+            <MessageCircle className="w-12 h-12 text-white mb-4" />
+            <h3 className="text-2xl font-semibold mb-4 text-white">Seamless Communication</h3>
+            <ul className="space-y-3 text-gray-300">
+              <li className="flex items-center gap-2">
+                <ArrowRight className="w-4 h-4" />
+                Real-time team chat and collaboration
+              </li>
+              <li className="flex items-center gap-2">
+                <ArrowRight className="w-4 h-4" />
+                Instant feedback on content
+              </li>
+              <li className="flex items-center gap-2">
+                <ArrowRight className="w-4 h-4" />
+                Streamlined approval process
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
 
