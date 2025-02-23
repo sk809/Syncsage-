@@ -21,7 +21,7 @@ const Landing = () => {
     }
   };
 
-  return <div className="min-h-screen bg-gradient-to-b from-[#1A1F2C] via-[#121520] to-black">
+  return <div className="min-h-screen bg-gradient-to-b from-black via-purple-900 to-purple-800">
       {/* Hero Section */}
       <div className="container mx-auto px-4 pt-20 pb-16">
         <nav className="flex justify-between items-center mb-16">
@@ -47,7 +47,7 @@ const Landing = () => {
                 Get Started <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="border-white/20 text-purple-600 bg-zinc-50 px-[46px] text-base">
+            <Button size="lg" variant="outline" className="border-white/20 text-white bg-white/10 hover:bg-white/20 px-[46px] text-base">
               Watch Demo
             </Button>
           </div>
