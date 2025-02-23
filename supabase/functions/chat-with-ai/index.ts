@@ -17,8 +17,10 @@ serve(async (req) => {
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
     if (!openAIApiKey) {
-      throw new Error('OPENAI_API_KEY is not set');
+      throw new Error('OpenAI API key is not configured');
     }
+
+    console.log('Sending request to OpenAI with messages:', JSON.stringify(messages));
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -31,7 +33,7 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are a helpful AI assistant focused on helping content creators manage their work, analyze performance, and improve their content strategy. Be concise and practical in your responses."
+            content: "You are a helpful AI assistant for content creators. Keep your responses concise and focused on helping with content creation, strategy, and analytics."
           },
           ...messages
         ],
@@ -39,10 +41,17 @@ serve(async (req) => {
     });
 
     const data = await response.json();
+    console.log('Received response from OpenAI:', JSON.stringify(data));
+
+    if (data.error) {
+      throw new Error(data.error.message || 'Error from OpenAI API');
+    }
+
     return new Response(JSON.stringify(data), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    console.error('Error in chat-with-ai function:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

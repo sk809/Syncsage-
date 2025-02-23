@@ -5,6 +5,7 @@ import { ArrowRight, Zap, Users, Brain, BarChart, Upload, Bot, ListChecks, Gauge
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { ChatInterface } from "@/components/Chat/ChatInterface";
 
 const Landing = () => {
   const [comment, setComment] = useState("");
@@ -50,6 +51,12 @@ const Landing = () => {
             <Button size="lg" variant="outline" className="border-white/20 text-white bg-white/10 hover:bg-white/20 px-[46px] text-base">
               Watch Demo
             </Button>
+          </div>
+
+          {/* AI Chat Section */}
+          <div className="max-w-2xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10 mb-16">
+            <h2 className="text-2xl font-semibold text-white mb-6">Try Our AI Assistant</h2>
+            <ChatInterface />
           </div>
 
           {/* Leave Your Thoughts Section */}
