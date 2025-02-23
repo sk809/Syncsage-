@@ -1,14 +1,15 @@
-import { useEffect } from "react";
+
 import { DashboardCard } from "@/components/Dashboard/DashboardCard";
 import { PerformanceChart } from "@/components/Dashboard/PerformanceChart";
 import { TaskList } from "@/components/Dashboard/TaskList";
 import { SoundPlayer } from "@/components/Relaxation/SoundPlayer";
+import { ChatInterface } from "@/components/Chat/ChatInterface";
 import { Activity, Film, Users } from "lucide-react";
-import "@fontsource/inter/400.css"; // Regular weight
-import "@fontsource/inter/500.css"; // Medium weight
-import "@fontsource/inter/600.css"; // Semi-bold weight
+import "@fontsource/inter/400.css";
+import "@fontsource/inter/500.css";
+import "@fontsource/inter/600.css";
 
-const Index = () => {
+const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container py-8">
@@ -57,7 +58,11 @@ const Index = () => {
             </DashboardCard>
           </div>
           
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 space-y-8">
+            <DashboardCard title="AI Assistant">
+              <ChatInterface />
+            </DashboardCard>
+            
             <DashboardCard title="Mind Relaxation">
               <SoundPlayer />
             </DashboardCard>
@@ -68,4 +73,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Dashboard;
