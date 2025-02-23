@@ -14,40 +14,60 @@ serve(async (req) => {
 
   try {
     const { messages } = await req.json();
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
 
-    if (!openAIApiKey) {
-      throw new Error('OpenAI API key is not configured');
+    if (!geminiApiKey) {
+      throw new Error('Gemini API key is not configured');
     }
 
-    console.log('Sending request to OpenAI with messages:', JSON.stringify(messages));
+    console.log('Processing messages for Gemini:', messages);
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Format messages for Gemini API
+    const formattedMessages = messages.map(msg => ({
+      role: msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content }]
+    }));
+
+    // Add system message
+    formattedMessages.unshift({
+      role: 'user',
+      parts: [{ text: 'You are a helpful AI assistant for content creators. Keep your responses concise and focused on helping with content creation, strategy, and analytics.' }]
+    });
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: "system",
-            content: "You are a helpful AI assistant for content creators. Keep your responses concise and focused on helping with content creation, strategy, and analytics."
-          },
-          ...messages
-        ],
+        contents: formattedMessages,
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+        },
       }),
     });
 
     const data = await response.json();
-    console.log('Received response from OpenAI:', JSON.stringify(data));
+    console.log('Received response from Gemini:', JSON.stringify(data));
 
-    if (data.error) {
-      throw new Error(data.error.message || 'Error from OpenAI API');
+    if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
+      throw new Error('Invalid response from Gemini API');
     }
 
-    return new Response(JSON.stringify(data), {
+    // Format response to match OpenAI structure for frontend compatibility
+    const formattedResponse = {
+      choices: [{
+        message: {
+          content: data.candidates[0].content.parts[0].text,
+          role: 'assistant'
+        }
+      }]
+    };
+
+    return new Response(JSON.stringify(formattedResponse), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

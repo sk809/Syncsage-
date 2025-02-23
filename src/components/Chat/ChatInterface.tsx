@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Send } from "lucide-react";
+import { Loader2, Send, Bot } from "lucide-react";
 import { ChatMessage } from "./ChatMessage";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -60,15 +60,22 @@ export const ChatInterface = () => {
 
   return (
     <div className={`flex flex-col ${isLandingPage ? "h-[400px]" : "h-[600px]"} bg-white rounded-lg shadow-lg`}>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {messages.length === 0 && (
+        <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center">
+            <Bot className="w-8 h-8 text-white" />
+          </div>
+          <h3 className="text-xl font-medium text-gray-900">AI Content Assistant</h3>
+          <p className="text-gray-500 max-w-sm">
+            Ask me anything about content creation, analytics, or strategy. I'm here to help you grow your audience!
+          </p>
+        </div>
+      )}
+      
+      <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${messages.length > 0 ? 'block' : 'hidden'}`}>
         {messages.map((message, index) => (
           <ChatMessage key={index} role={message.role} content={message.content} />
         ))}
-        {messages.length === 0 && (
-          <div className="text-center text-gray-500 mt-8">
-            <p>Ask me anything about content creation, analytics, or strategy!</p>
-          </div>
-        )}
       </div>
       
       <form onSubmit={handleSubmit} className="border-t p-4">
@@ -84,7 +91,7 @@ export const ChatInterface = () => {
           <Button 
             type="submit" 
             disabled={loading}
-            className={isLandingPage ? "bg-white text-purple-700 hover:bg-white/90" : ""}
+            className={isLandingPage ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700" : ""}
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
