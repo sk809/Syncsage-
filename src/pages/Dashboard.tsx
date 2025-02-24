@@ -1,6 +1,6 @@
 
 import { KanbanBoard } from "@/components/Kanban/KanbanBoard";
-import { Bot, Users, Brain, Robot, Archive, ListTodo } from "lucide-react";
+import { Bot, Users, Brain, Archive, ListTodo } from "lucide-react";
 
 const DashboardSection = ({ 
   id, 
@@ -37,7 +37,7 @@ const Dashboard = () => {
           id="ai-automation"
           title="Advanced AI Automation"
           description="Our platform uses state-of-the-art AI to automate content repurposing, auto-captioning, and more—saving you time and boosting productivity."
-          icon={Robot}
+          icon={Bot}
         />
         
         <DashboardSection
