@@ -28,10 +28,18 @@ serve(async (req) => {
       parts: [{ text: msg.content }]
     }));
 
-    // Add system message
+    // Add system message with formatting instructions
     formattedMessages.unshift({
       role: 'user',
-      parts: [{ text: 'You are a helpful AI assistant for content creators. Keep your responses concise and focused on helping with content creation, strategy, and analytics.' }]
+      parts: [{ text: `You are Sage Bot, a helpful AI assistant for content creators. Follow these formatting rules:
+      1. Use "##" for main headings
+      2. Use "**" for important points or subheadings
+      3. Use bullet points (•) for lists
+      4. Add line breaks between sections
+      5. Keep responses concise and well-structured
+      6. Use clear paragraphs with proper spacing
+      
+      Focus on helping with content creation, strategy, and analytics.` }]
     });
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
