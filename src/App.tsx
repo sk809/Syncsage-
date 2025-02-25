@@ -1,8 +1,10 @@
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import SageBot from "./pages/SageBot";
 import TodoList from "./pages/TodoList";
+import Library from "./pages/Library";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -60,7 +62,7 @@ function App() {
                 path="/library"
                 element={
                   <ProtectedRoute>
-                    <Dashboard />
+                    <Library />
                   </ProtectedRoute>
                 }
               />
