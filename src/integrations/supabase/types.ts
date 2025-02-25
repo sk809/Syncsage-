@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      media_files: {
+        Row: {
+          content_type: string | null
+          created_at: string | null
+          description: string | null
+          file_path: string
+          filename: string
+          id: string
+          size: number | null
+          type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          file_path: string
+          filename: string
+          id?: string
+          size?: number | null
+          type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content_type?: string | null
+          created_at?: string | null
+          description?: string | null
+          file_path?: string
+          filename?: string
+          id?: string
+          size?: number | null
+          type?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
