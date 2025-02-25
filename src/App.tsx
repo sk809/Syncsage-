@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import SageBot from "./pages/SageBot";
 import TodoList from "./pages/TodoList";
 import Library from "./pages/Library";
+import RelaxMode from "./pages/RelaxMode";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -78,7 +79,7 @@ function App() {
                 path="/relax"
                 element={
                   <ProtectedRoute>
-                    <Dashboard />
+                    <RelaxMode />
                   </ProtectedRoute>
                 }
               />
