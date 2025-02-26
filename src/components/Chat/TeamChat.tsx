@@ -15,8 +15,8 @@ interface Message {
   user_id: string;
   created_at: string;
   is_edited: boolean;
-  user?: {
-    email: string;
+  profile?: {
+    email: string | null;
     full_name: string | null;
   };
 }
@@ -24,7 +24,6 @@ interface Message {
 export function TeamChat() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { toast } = useToast();
@@ -40,7 +39,7 @@ export function TeamChat() {
         .from("chat_messages")
         .select(`
           *,
-          user:profiles(email, full_name)
+          profile:profiles(email, full_name)
         `)
         .order("created_at", { ascending: true });
 
@@ -53,7 +52,7 @@ export function TeamChat() {
         return;
       }
 
-      setMessages(data || []);
+      setMessages(data as Message[]);
       scrollToBottom();
     };
 
@@ -69,21 +68,10 @@ export function TeamChat() {
           schema: "public",
           table: "chat_messages",
         },
-        async (payload) => {
-          const { data: userData, error } = await supabase
-            .from("profiles")
-            .select("email, full_name")
-            .eq("id", payload.new.user_id)
-            .single();
-
-          if (!error && userData) {
-            const newMessage = {
-              ...payload.new,
-              user: userData,
-            };
-            setMessages((prev) => [...prev, newMessage]);
-            scrollToBottom();
-          }
+        (payload) => {
+          const newMessage = payload.new as Message;
+          setMessages((prev) => [...prev, newMessage]);
+          scrollToBottom();
         }
       )
       .subscribe();
@@ -117,7 +105,7 @@ export function TeamChat() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-6rem)] max-w-4xl mx-auto p-4">
-      <div className="bg-white rounded-lg shadow-lg flex-1 flex flex-col overflow-hidden">
+      <div className="bg-card rounded-lg shadow-lg flex-1 flex flex-col overflow-hidden">
         <div className="p-4 border-b">
           <h2 className="text-xl font-semibold">Team Chat</h2>
         </div>
@@ -150,7 +138,7 @@ export function TeamChat() {
                   <p>{message.content}</p>
                 </div>
                 <div className="flex gap-2 text-xs text-muted-foreground mt-1">
-                  <span>{message.user?.full_name || message.user?.email}</span>
+                  <span>{message.profile?.full_name || message.profile?.email || 'Unknown User'}</span>
                   <span>•</span>
                   <span>
                     {formatDistanceToNow(new Date(message.created_at), {
