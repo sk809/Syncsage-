@@ -1,9 +1,8 @@
 
 import { useState, useEffect, useRef } from "react";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, User } from "lucide-react";
+import { Send } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,14 +13,6 @@ interface Message {
   content: string;
   user_id: string;
   created_at: string;
-  updated_at: string;
-  is_edited: boolean;
-  mentions: string[];
-  reply_to: string | null;
-  profiles?: {
-    full_name: string | null;
-    email: string | null;
-  } | null;
 }
 
 export function TeamChat() {
@@ -40,10 +31,7 @@ export function TeamChat() {
     const fetchMessages = async () => {
       const { data, error } = await supabase
         .from("chat_messages")
-        .select(`
-          id, content, user_id, created_at, updated_at, is_edited, mentions, reply_to,
-          profiles:profiles (full_name, email)
-        `)
+        .select("id, content, user_id, created_at")
         .order("created_at", { ascending: true });
 
       if (error) {
@@ -55,12 +43,7 @@ export function TeamChat() {
         return;
       }
 
-      const formattedMessages = data?.map((msg) => ({
-        ...msg,
-        profiles: msg.profiles || { full_name: null, email: null }
-      })) || [];
-
-      setMessages(formattedMessages);
+      setMessages(data);
       scrollToBottom();
     };
 
@@ -77,10 +60,7 @@ export function TeamChat() {
           table: "chat_messages",
         },
         (payload) => {
-          const newMessage = {
-            ...payload.new,
-            profiles: { full_name: null, email: null }
-          } as Message;
+          const newMessage = payload.new as Message;
           setMessages((prev) => [...prev, newMessage]);
           scrollToBottom();
         }
@@ -126,42 +106,21 @@ export function TeamChat() {
             <div
               key={message.id}
               className={`flex gap-3 ${
-                message.user_id === user?.id ? "flex-row-reverse" : ""
+                message.user_id === user?.id ? "justify-end" : ""
               }`}
             >
-              <Avatar className="h-8 w-8">
-                <AvatarFallback>
-                  <User className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
               <div
-                className={`flex flex-col ${
-                  message.user_id === user?.id ? "items-end" : ""
+                className={`rounded-lg px-4 py-2 max-w-[70%] ${
+                  message.user_id === user?.id
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted"
                 }`}
               >
-                <div
-                  className={`rounded-lg px-4 py-2 max-w-[70%] ${
-                    message.user_id === user?.id
-                      ? "bg-primary text-primary-foreground"
-                      : "bg-muted"
-                  }`}
-                >
-                  <p>{message.content}</p>
-                </div>
-                <div className="flex gap-2 text-xs text-muted-foreground mt-1">
-                  <span>{message.profiles?.full_name || message.profiles?.email || 'Unknown User'}</span>
-                  <span>•</span>
-                  <span>
-                    {formatDistanceToNow(new Date(message.created_at), {
-                      addSuffix: true,
-                    })}
-                  </span>
-                  {message.is_edited && (
-                    <>
-                      <span>•</span>
-                      <span>edited</span>
-                    </>
-                  )}
+                <p>{message.content}</p>
+                <div className="text-xs opacity-70 mt-1">
+                  {formatDistanceToNow(new Date(message.created_at), {
+                    addSuffix: true,
+                  })}
                 </div>
               </div>
             </div>
