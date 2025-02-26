@@ -14,11 +14,14 @@ interface Message {
   content: string;
   user_id: string;
   created_at: string;
+  updated_at: string;
   is_edited: boolean;
-  profile?: {
-    email: string | null;
+  mentions: string[];
+  reply_to: string | null;
+  profiles?: {
     full_name: string | null;
-  };
+    email: string | null;
+  } | null;
 }
 
 export function TeamChat() {
@@ -38,8 +41,8 @@ export function TeamChat() {
       const { data, error } = await supabase
         .from("chat_messages")
         .select(`
-          *,
-          profile:profiles(email, full_name)
+          id, content, user_id, created_at, updated_at, is_edited, mentions, reply_to,
+          profiles:profiles (full_name, email)
         `)
         .order("created_at", { ascending: true });
 
@@ -52,7 +55,12 @@ export function TeamChat() {
         return;
       }
 
-      setMessages(data as Message[]);
+      const formattedMessages = data?.map((msg) => ({
+        ...msg,
+        profiles: msg.profiles || { full_name: null, email: null }
+      })) || [];
+
+      setMessages(formattedMessages);
       scrollToBottom();
     };
 
@@ -69,7 +77,10 @@ export function TeamChat() {
           table: "chat_messages",
         },
         (payload) => {
-          const newMessage = payload.new as Message;
+          const newMessage = {
+            ...payload.new,
+            profiles: { full_name: null, email: null }
+          } as Message;
           setMessages((prev) => [...prev, newMessage]);
           scrollToBottom();
         }
@@ -138,7 +149,7 @@ export function TeamChat() {
                   <p>{message.content}</p>
                 </div>
                 <div className="flex gap-2 text-xs text-muted-foreground mt-1">
-                  <span>{message.profile?.full_name || message.profile?.email || 'Unknown User'}</span>
+                  <span>{message.profiles?.full_name || message.profiles?.email || 'Unknown User'}</span>
                   <span>•</span>
                   <span>
                     {formatDistanceToNow(new Date(message.created_at), {
