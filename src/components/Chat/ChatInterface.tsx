@@ -30,13 +30,23 @@ export const ChatInterface = () => {
     setLoading(true);
 
     try {
+      // Make the API call with detailed console logging for debugging
+      console.log("Sending message to AI:", userMessage);
+      console.log("All messages being sent:", [...messages, userMessage]);
+      
       const { data, error } = await supabase.functions.invoke("chat-with-ai", {
         body: { messages: [...messages, userMessage] },
       });
 
-      if (error) throw error;
+      console.log("Response from AI service:", data);
+      
+      if (error) {
+        console.error("Supabase function error:", error);
+        throw error;
+      }
 
       if (!data?.choices?.[0]?.message?.content) {
+        console.error("Invalid AI response structure:", data);
         throw new Error("Invalid response from AI");
       }
 
@@ -48,10 +58,16 @@ export const ChatInterface = () => {
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Chat error:', error);
+      
+      // More descriptive error message for the user
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Unknown error occurred";
+        
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Failed to get AI response. Please try again.",
+        title: "AI Response Error",
+        description: `Failed to get AI response: ${errorMessage}. Please try again.`,
       });
     } finally {
       setLoading(false);
@@ -76,6 +92,11 @@ export const ChatInterface = () => {
         {messages.map((message, index) => (
           <ChatMessage key={index} role={message.role} content={message.content} />
         ))}
+        {loading && (
+          <div className="flex justify-center py-2">
+            <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          </div>
+        )}
       </div>
       
       <form onSubmit={handleSubmit} className="border-t p-4">
