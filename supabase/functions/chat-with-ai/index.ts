@@ -19,13 +19,15 @@ serve(async (req) => {
     // Log the received messages for debugging
     console.log("Received messages:", messages);
     
-    // If no API key is available, return a helpful error
-    const apiKey = Deno.env.get('OPENAI_API_KEY') || Deno.env.get('GEMINI_API_KEY');
-    if (!apiKey) {
+    // Try OpenAI first, fallback to Gemini if not available
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
+    
+    if (!openAIApiKey && !geminiApiKey) {
       console.error("No API key found for AI service");
       return new Response(
         JSON.stringify({ 
-          error: "AI service configuration error: API key not found" 
+          error: "AI service configuration error: No API key found for either OpenAI or Gemini" 
         }),
         { 
           status: 500, 
@@ -34,45 +36,104 @@ serve(async (req) => {
       );
     }
 
-    // For this implementation, we'll use a simple mock response
-    // This ensures the function works even without external API calls
-    // Later you can replace this with actual API calls to OpenAI, Google Gemini, etc.
+    let response;
     
-    // Find the last user message
-    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
-    let responseContent = "I'm Sage Bot, your AI content assistant. I'm here to help with content creation, analytics, and strategy!";
-    
-    if (lastUserMessage) {
-      if (lastUserMessage.content.toLowerCase().includes("who are you")) {
-        responseContent = "I'm Sage Bot, your AI content assistant. I help content creators with ideation, strategy, and analytics to boost your creative workflow!";
-      } else if (lastUserMessage.content.toLowerCase().includes("hello") || 
-                lastUserMessage.content.toLowerCase().includes("hi")) {
-        responseContent = "Hello there! I'm Sage Bot. How can I assist with your content creation today?";
-      } else {
-        responseContent = "I'm here to help with your content needs. Could you provide more details about what you're looking for?";
+    // Use OpenAI if available
+    if (openAIApiKey) {
+      console.log("Using OpenAI API");
+      response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openAIApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: messages.map((msg: any) => ({
+            role: msg.role,
+            content: msg.content
+          })),
+          temperature: 0.7,
+        }),
+      });
+      
+      const data = await response.json();
+      console.log("OpenAI response:", data);
+      
+      if (data.error) {
+        throw new Error(`OpenAI API error: ${data.error.message || JSON.stringify(data.error)}`);
       }
+      
+      return new Response(
+        JSON.stringify(data),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
     
-    // Format response to match expected structure
-    const response = {
-      choices: [{
-        message: {
-          content: responseContent,
-          role: 'assistant'
-        }
-      }]
-    };
-
-    console.log("Sending response:", response);
+    // Fallback to Gemini if OpenAI is not available
+    if (geminiApiKey) {
+      console.log("Using Gemini API");
+      // Format messages for Gemini API
+      const formattedMessages = messages.map((msg: any) => ({
+        role: msg.role === "assistant" ? "model" : msg.role,
+        parts: [{ text: msg.content }]
+      }));
+      
+      response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': geminiApiKey,
+        },
+        body: JSON.stringify({
+          contents: formattedMessages,
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 1024,
+          },
+        }),
+      });
+      
+      const geminiData = await response.json();
+      console.log("Gemini response:", geminiData);
+      
+      if (geminiData.error) {
+        throw new Error(`Gemini API error: ${geminiData.error.message || JSON.stringify(geminiData.error)}`);
+      }
+      
+      // Transform Gemini response to match OpenAI format expected by frontend
+      const transformedResponse = {
+        choices: [{
+          message: {
+            content: geminiData.candidates[0].content.parts[0].text,
+            role: 'assistant'
+          }
+        }]
+      };
+      
+      return new Response(
+        JSON.stringify(transformedResponse),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     
-    return new Response(
-      JSON.stringify(response),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    // This shouldn't happen since we check for API keys earlier
+    throw new Error("No AI service available");
+    
   } catch (error) {
     console.error("Error processing request:", error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        choices: [{
+          message: {
+            content: "I'm sorry, I encountered an error processing your request. Please try again later.",
+            role: "assistant"
+          }
+        }]
+      }),
       { 
         status: 500, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 

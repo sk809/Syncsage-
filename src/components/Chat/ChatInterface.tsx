@@ -69,6 +69,12 @@ export const ChatInterface = () => {
         title: "AI Response Error",
         description: `Failed to get AI response: ${errorMessage}. Please try again.`,
       });
+      
+      // Add a fallback AI response
+      setMessages((prev) => [...prev, {
+        role: "assistant",
+        content: "I'm sorry, I encountered an error processing your request. Please try again in a moment."
+      }]);
     } finally {
       setLoading(false);
     }
