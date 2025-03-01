@@ -7,7 +7,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const GEMINI_API_KEY = "AIzaSyBSmfSJdkZ7-I0xsb4cyIE16vhBwNiW2FM";
+// Using environment variable for API key instead of hardcoding
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") || "AIzaSyBSmfSJdkZ7-I0xsb4cyIE16vhBwNiW2FM";
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -26,22 +27,29 @@ serve(async (req) => {
       throw new Error("AI service configuration error: No API key found for Gemini");
     }
 
-    console.log("Using Gemini API");
+    console.log("Using Gemini API with proper configuration");
     
     // Format messages for Gemini API
-    const formattedMessages = messages.map((msg) => ({
-      role: msg.role === "assistant" ? "model" : msg.role,
-      parts: [{ text: msg.content }]
-    }));
+    // The most recent message is the one we want to send to Gemini
+    const lastMessage = messages[messages.length - 1];
+    console.log("Using last message for prompt:", lastMessage);
     
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent', {
+    const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
+    console.log("Making request to:", apiUrl);
+    
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'x-goog-api-key': GEMINI_API_KEY,
       },
       body: JSON.stringify({
-        contents: formattedMessages,
+        contents: [
+          {
+            role: lastMessage.role === "assistant" ? "model" : "user",
+            parts: [{ text: lastMessage.content }]
+          }
+        ],
         generationConfig: {
           temperature: 0.7,
           topK: 40,
@@ -51,12 +59,21 @@ serve(async (req) => {
       }),
     });
     
-    const geminiData = await response.json();
-    console.log("Gemini response:", geminiData);
+    // Log the response status for debugging
+    console.log("Gemini API response status:", response.status);
     
-    if (geminiData.error) {
-      console.error("Gemini API error:", geminiData.error);
-      throw new Error(`Gemini API error: ${geminiData.error.message || JSON.stringify(geminiData.error)}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Gemini API error:", errorText);
+      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
+    }
+    
+    const geminiData = await response.json();
+    console.log("Gemini response structure:", JSON.stringify(geminiData));
+    
+    if (!geminiData.candidates || !geminiData.candidates[0]) {
+      console.error("Invalid Gemini response format:", geminiData);
+      throw new Error("Invalid response format from Gemini API");
     }
     
     // Transform Gemini response to match OpenAI format expected by frontend
@@ -68,6 +85,8 @@ serve(async (req) => {
         }
       }]
     };
+    
+    console.log("Transformed response:", JSON.stringify(transformedResponse));
     
     return new Response(
       JSON.stringify(transformedResponse),
