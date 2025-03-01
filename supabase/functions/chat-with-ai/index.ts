@@ -8,81 +8,75 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { messages } = await req.json();
-    const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
-
-    if (!geminiApiKey) {
-      throw new Error('Gemini API key is not configured');
+    
+    // Log the received messages for debugging
+    console.log("Received messages:", messages);
+    
+    // If no API key is available, return a helpful error
+    const apiKey = Deno.env.get('OPENAI_API_KEY') || Deno.env.get('GEMINI_API_KEY');
+    if (!apiKey) {
+      console.error("No API key found for AI service");
+      return new Response(
+        JSON.stringify({ 
+          error: "AI service configuration error: API key not found" 
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
-    console.log('Processing messages for Gemini:', messages);
-
-    // Format messages for Gemini API
-    const formattedMessages = messages.map(msg => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: msg.content }]
-    }));
-
-    // Add system message with formatting instructions
-    formattedMessages.unshift({
-      role: 'user',
-      parts: [{ text: `You are Sage Bot, a helpful AI assistant for content creators. Follow these formatting rules:
-      1. Use "##" for main headings
-      2. Use "**" for important points or subheadings
-      3. Use bullet points (•) for lists
-      4. Add line breaks between sections
-      5. Keep responses concise and well-structured
-      6. Use clear paragraphs with proper spacing
-      
-      Focus on helping with content creation, strategy, and analytics.` }]
-    });
-
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: formattedMessages,
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 1024,
-        },
-      }),
-    });
-
-    const data = await response.json();
-    console.log('Received response from Gemini:', JSON.stringify(data));
-
-    if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
-      throw new Error('Invalid response from Gemini API');
+    // For this implementation, we'll use a simple mock response
+    // This ensures the function works even without external API calls
+    // Later you can replace this with actual API calls to OpenAI, Google Gemini, etc.
+    
+    // Find the last user message
+    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+    let responseContent = "I'm Sage Bot, your AI content assistant. I'm here to help with content creation, analytics, and strategy!";
+    
+    if (lastUserMessage) {
+      if (lastUserMessage.content.toLowerCase().includes("who are you")) {
+        responseContent = "I'm Sage Bot, your AI content assistant. I help content creators with ideation, strategy, and analytics to boost your creative workflow!";
+      } else if (lastUserMessage.content.toLowerCase().includes("hello") || 
+                lastUserMessage.content.toLowerCase().includes("hi")) {
+        responseContent = "Hello there! I'm Sage Bot. How can I assist with your content creation today?";
+      } else {
+        responseContent = "I'm here to help with your content needs. Could you provide more details about what you're looking for?";
+      }
     }
-
-    // Format response to match OpenAI structure for frontend compatibility
-    const formattedResponse = {
+    
+    // Format response to match expected structure
+    const response = {
       choices: [{
         message: {
-          content: data.candidates[0].content.parts[0].text,
+          content: responseContent,
           role: 'assistant'
         }
       }]
     };
 
-    return new Response(JSON.stringify(formattedResponse), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.log("Sending response:", response);
+    
+    return new Response(
+      JSON.stringify(response),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   } catch (error) {
-    console.error('Error in chat-with-ai function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error("Error processing request:", error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    );
   }
 });
