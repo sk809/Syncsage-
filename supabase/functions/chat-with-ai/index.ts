@@ -1,5 +1,4 @@
 
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
@@ -7,8 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Using environment variable for API key instead of hardcoding
-const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") || "AIzaSyBSmfSJdkZ7-I0xsb4cyIE16vhBwNiW2FM";
+// Using environment variable for API key with fallback
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") || "";
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -17,22 +16,37 @@ serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json();
-    
-    // Log the received messages for debugging
-    console.log("Received messages:", messages);
-    
+    const requestData = await req.json();
+    const { messages } = requestData;
+
+    if (!messages || !Array.isArray(messages)) {
+      throw new Error("Invalid request: messages array is required");
+    }
+
+    console.log("Processing request with messages:", JSON.stringify(messages));
+
     if (!GEMINI_API_KEY) {
-      console.error("No API key found for Gemini");
+      console.error("Missing Gemini API key");
       throw new Error("AI service configuration error: No API key found for Gemini");
     }
 
     console.log("Using Gemini API with proper configuration");
     
-    // Format messages for Gemini API
-    // The most recent message is the one we want to send to Gemini
+    // For Gemini API we'll combine all user messages into one context for better continuity
+    let combinedPrompt = "You are SageBot, an expert AI assistant specializing in content creation, marketing strategies, and social media. You help users generate creative content ideas, viral hooks, trending hashtags, and detailed content strategies. Always provide well-structured, practical advice and creative suggestions. Format your responses with clear headings, bullet points for lists, and keep your tone helpful and encouraging.\n\n";
+    
+    // Add conversation history for context
+    messages.forEach((msg, index) => {
+      if (index < messages.length - 1) { // All but the last message
+        combinedPrompt += `${msg.role === "assistant" ? "You" : "User"}: ${msg.content}\n\n`;
+      }
+    });
+    
+    // Add the actual question
     const lastMessage = messages[messages.length - 1];
-    console.log("Using last message for prompt:", lastMessage);
+    combinedPrompt += `User's request: ${lastMessage.content}\n\nYour response:`;
+    
+    console.log("Combined prompt:", combinedPrompt);
     
     const apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
     console.log("Making request to:", apiUrl);
@@ -46,15 +60,14 @@ serve(async (req) => {
       body: JSON.stringify({
         contents: [
           {
-            role: lastMessage.role === "assistant" ? "model" : "user",
-            parts: [{ text: lastMessage.content }]
+            parts: [{ text: combinedPrompt }]
           }
         ],
         generationConfig: {
           temperature: 0.7,
           topK: 40,
           topP: 0.95,
-          maxOutputTokens: 1024,
+          maxOutputTokens: 4096,
         },
       }),
     });
@@ -76,38 +89,43 @@ serve(async (req) => {
       throw new Error("Invalid response format from Gemini API");
     }
     
+    // Extract the generated text
+    const generatedText = geminiData.candidates[0].content.parts[0].text;
+    
     // Transform Gemini response to match OpenAI format expected by frontend
     const transformedResponse = {
       choices: [{
         message: {
-          content: geminiData.candidates[0].content.parts[0].text,
-          role: 'assistant'
+          role: "assistant",
+          content: generatedText
         }
       }]
     };
     
-    console.log("Transformed response:", JSON.stringify(transformedResponse));
+    console.log("Transformed response for frontend:", JSON.stringify(transformedResponse));
     
     return new Response(
       JSON.stringify(transformedResponse),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json' 
+        } 
+      }
     );
-    
   } catch (error) {
-    console.error("Error processing request:", error);
+    console.error("Edge function error:", error);
+    
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        choices: [{
-          message: {
-            content: "I'm sorry, I encountered an error processing your request. Please try again later.",
-            role: "assistant"
-          }
-        }]
+        error: error.message || "Unknown error processing your request" 
       }),
       { 
         status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json' 
+        } 
       }
     );
   }
