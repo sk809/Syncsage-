@@ -1,4 +1,3 @@
-
 import { KanbanBoard } from "@/components/Kanban/KanbanBoard";
 import { 
   Bot, 
@@ -15,11 +14,17 @@ import {
   BarChart,
   Instagram,
   Twitter,
-  Facebook
+  Facebook,
+  Link as LinkIcon,
+  Youtube,
+  Linkedin,
+  TikTok,
+  Plus
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 const DashboardSection = ({ 
   id, 
@@ -46,7 +51,6 @@ const DashboardSection = ({
   </section>
 );
 
-// Stat Card Component
 const StatCard = ({ title, value, icon: Icon, trend, color = "primary" }: { 
   title: string;
   value: string;
@@ -110,12 +114,48 @@ const TaskItem = ({ title, status, dueDate }: { title: string; status: "pending"
   );
 };
 
+const SocialConnectCard = ({ platform, icon: Icon, connected = false }: { 
+  platform: string; 
+  icon: React.ElementType; 
+  connected?: boolean;
+}) => {
+  const { toast } = useToast();
+  
+  const handleConnect = () => {
+    toast({
+      title: connected ? `${platform} Disconnected` : `Connect to ${platform}`,
+      description: connected 
+        ? `Your ${platform} account has been disconnected.` 
+        : `Redirecting to ${platform} for authorization...`,
+      variant: connected ? "destructive" : "default",
+    });
+  };
+  
+  return (
+    <div className="flex items-center justify-between p-3 rounded-lg border hover:shadow-md transition-all duration-300">
+      <div className="flex items-center gap-3">
+        <div className={`p-2 rounded-full ${connected ? "bg-primary/10" : "bg-gray-100"}`}>
+          <Icon className={`w-5 h-5 ${connected ? "text-primary" : "text-gray-500"}`} />
+        </div>
+        <span className="font-medium">{platform}</span>
+      </div>
+      <Button 
+        size="sm" 
+        variant={connected ? "outline" : "default"}
+        className="transition-all duration-300 hover:scale-105"
+        onClick={handleConnect}
+      >
+        {connected ? "Disconnect" : "Connect"}
+      </Button>
+    </div>
+  );
+};
+
 const Dashboard = () => {
   return (
     <div className="container mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Content Creation Dashboard</h1>
       
-      {/* User Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <StatCard 
           title="Active Users" 
@@ -139,9 +179,7 @@ const Dashboard = () => {
         />
       </div>
       
-      {/* Quick Access Sections */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Task Summary */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -163,7 +201,6 @@ const Dashboard = () => {
           </CardContent>
         </Card>
         
-        {/* AI Assistant Quick Access */}
         <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-100">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -193,9 +230,7 @@ const Dashboard = () => {
         </Card>
       </div>
       
-      {/* Project Progress & Social Media Performance */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Project Progress Tracker */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -237,7 +272,6 @@ const Dashboard = () => {
           </CardContent>
         </Card>
         
-        {/* Social Media Performance */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -283,7 +317,29 @@ const Dashboard = () => {
         </Card>
       </div>
       
-      {/* Kanban Board */}
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <LinkIcon className="w-5 h-5 text-primary" />
+            Connect Your Accounts
+          </CardTitle>
+          <CardDescription>Link your social media profiles to enable auto-posting and analytics</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SocialConnectCard platform="Instagram" icon={Instagram} connected={true} />
+            <SocialConnectCard platform="Twitter" icon={Twitter} connected={true} />
+            <SocialConnectCard platform="Facebook" icon={Facebook} />
+            <SocialConnectCard platform="LinkedIn" icon={Linkedin} />
+            <SocialConnectCard platform="YouTube" icon={Youtube} />
+            <SocialConnectCard platform="TikTok" icon={TikTok} />
+          </div>
+          <Button variant="outline" className="w-full mt-4 transition-all duration-300 hover:scale-105">
+            <Plus className="w-4 h-4 mr-2" /> Add Another Platform
+          </Button>
+        </CardContent>
+      </Card>
+      
       <DashboardSection
         id="advanced-todo"
         title="Advanced To-Do List"
