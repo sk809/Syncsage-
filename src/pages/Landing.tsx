@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Zap, Users, Brain, BarChart, Upload, Bot, ListChecks, Gauge, Share2, MessageCircle, Send } from "lucide-react";
@@ -6,22 +5,21 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ChatInterface } from "@/components/Chat/ChatInterface";
-
 const Landing = () => {
   const [comment, setComment] = useState("");
-  const { toast } = useToast();
-
+  const {
+    toast
+  } = useToast();
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (comment.trim()) {
       toast({
         title: "Thank you for your feedback!",
-        description: "Your thoughts have been submitted successfully.",
+        description: "Your thoughts have been submitted successfully."
       });
       setComment("");
     }
   };
-
   return <div className="min-h-screen bg-gradient-to-b from-black via-purple-900 to-purple-800">
       {/* Hero Section */}
       <div className="container mx-auto px-4 pt-20 pb-16">
@@ -36,9 +34,7 @@ const Landing = () => {
         </nav>
 
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-semibold mb-6 text-white">
-            Make content creation faster not harder
-          </h1>
+          <h1 className="text-5xl md:text-6xl font-semibold mb-6 text-white">Your Superhuman content creation Buddy </h1>
           <p className="text-xl text-gray-200 mb-8">
             AI-powered tools to help content creators and teams collaborate, create, and grow their audience faster.
           </p>
@@ -63,17 +59,8 @@ const Landing = () => {
           <div className="max-w-2xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10">
             <h2 className="text-2xl font-semibold text-white mb-6">Leave Your Thoughts</h2>
             <form onSubmit={handleSubmitComment} className="space-y-4">
-              <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="Share your feedback or suggestions..."
-                className="w-full h-32 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              />
-              <Button 
-                type="submit" 
-                className="bg-purple-600 hover:bg-purple-700 text-white gap-2"
-                disabled={!comment.trim()}
-              >
+              <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Share your feedback or suggestions..." className="w-full h-32 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+              <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white gap-2" disabled={!comment.trim()}>
                 Submit <Send className="w-4 h-4" />
               </Button>
             </form>
@@ -184,13 +171,12 @@ const Landing = () => {
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Zap className="w-6 h-6 text-white" />
-              <span className="font-semibold text-white">CreatorFlow</span>
+              <span className="font-semibold text-white">Syncsage</span>
             </div>
-            <p className="text-gray-300">© 2024 CreatorFlow. All rights reserved.</p>
+            <p className="text-gray-300">© 2024 Syncsage All rights reserved.</p>
           </div>
         </div>
       </div>
     </div>;
 };
-
 export default Landing;
