@@ -31,6 +31,7 @@ serve(async (req) => {
     }
 
     console.log("Using Gemini API with proper configuration");
+    console.log("GEMINI_API_KEY:", GEMINI_API_KEY ? "Loaded" : "Not Found");
     
     // For Gemini API we'll combine all user messages into one context for better continuity
     let combinedPrompt = "You are SageBot, an expert AI assistant specializing in content creation, marketing strategies, and social media. You help users generate creative content ideas, viral hooks, trending hashtags, and detailed content strategies. Always provide well-structured, practical advice and creative suggestions. Format your responses with clear headings, bullet points for lists, and keep your tone helpful and encouraging.\n\n";
