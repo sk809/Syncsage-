@@ -12,8 +12,17 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Pencil, Trash2, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+// Define the interface for saved items
+interface SavedItem {
+  id: string;
+  type: "ideas" | "hooks" | "hashtags" | "strategy";
+  title: string;
+  content: string;
+  date: string;
+}
+
 // Mock data - in a real app, this would come from a database
-const mockSavedContent = [
+const mockSavedContent: SavedItem[] = [
   {
     id: "1",
     type: "ideas",
@@ -43,14 +52,6 @@ const mockSavedContent = [
     date: "2023-05-01"
   }
 ];
-
-interface SavedItem {
-  id: string;
-  type: "ideas" | "hooks" | "hashtags" | "strategy";
-  title: string;
-  content: string;
-  date: string;
-}
 
 export const SavedContent = () => {
   const [savedItems, setSavedItems] = useState<SavedItem[]>(mockSavedContent);
