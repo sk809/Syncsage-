@@ -1,18 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { AnimatedButton } from "@/components/ui/animated-button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Zap, Users, Brain, BarChart, Upload, Bot, ListChecks, Gauge, Share2, MessageCircle, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ChatInterface } from "@/components/Chat/ChatInterface";
-import { ButtonDemo } from "@/components/ButtonDemo";
-
 const Landing = () => {
   const [comment, setComment] = useState("");
-  const { toast } = useToast();
-  const [showButtonDemo, setShowButtonDemo] = useState(false);
-  
+  const {
+    toast
+  } = useToast();
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (comment.trim()) {
@@ -23,7 +20,6 @@ const Landing = () => {
       setComment("");
     }
   };
-  
   return <div className="min-h-screen bg-gradient-to-b from-black via-purple-900 to-purple-800">
       {/* Hero Section */}
       <div className="container mx-auto px-4 pt-20 pb-16">
@@ -33,48 +29,25 @@ const Landing = () => {
             <span className="text-xl font-semibold text-white">SyncSage</span>
           </div>
           <Link to="/dashboard">
-            <AnimatedButton 
-              variant="outline" 
-              animation="scale" 
-              className="bg-white/10 text-white border-white/20 hover:bg-white/20"
-            >
-              Sign In
-            </AnimatedButton>
+            <Button variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20">Sign In</Button>
           </Link>
         </nav>
 
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-semibold mb-6 text-white">Your Superhuman content creation Buddy </h1>
+          <h1 className="text-5xl md:text-6xl font-semibold mb-6 text-white">Your Superhuman content creation Buddy </h1>
           <p className="text-xl text-gray-200 mb-8">
             AI-powered tools to help content creators and teams collaborate, create, and grow their audience faster.
           </p>
           <div className="flex gap-4 justify-center mb-16">
             <Link to="/dashboard">
-              <AnimatedButton 
-                size="lg" 
-                animation="shine" 
-                className="bg-white text-purple-700 hover:bg-white/90 gap-2"
-              >
+              <Button size="lg" className="bg-white text-purple-700 hover:bg-white/90 gap-2">
                 Get Started <ArrowRight className="w-4 h-4" />
-              </AnimatedButton>
+              </Button>
             </Link>
-            <AnimatedButton 
-              size="lg" 
-              variant="outline" 
-              animation="pulse"
-              className="border-white/20 text-white bg-white/10 hover:bg-white/20 px-[46px] text-base"
-              onClick={() => setShowButtonDemo(!showButtonDemo)}
-            >
-              {showButtonDemo ? "Hide Demo" : "Try Button Animations"}
-            </AnimatedButton>
+            <Button size="lg" variant="outline" className="border-white/20 text-white bg-white/10 hover:bg-white/20 px-[46px] text-base">
+              Watch Demo
+            </Button>
           </div>
-          
-          {/* Button Animation Demo Section */}
-          {showButtonDemo && (
-            <div className="max-w-4xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10 mb-16">
-              <ButtonDemo />
-            </div>
-          )}
 
           {/* AI Chat Section */}
           <div className="max-w-2xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10 mb-16">
@@ -87,14 +60,9 @@ const Landing = () => {
             <h2 className="text-2xl font-semibold text-white mb-6">Leave Your Thoughts</h2>
             <form onSubmit={handleSubmitComment} className="space-y-4">
               <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Share your feedback or suggestions..." className="w-full h-32 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
-              <AnimatedButton 
-                type="submit" 
-                animation="slide"
-                className="bg-purple-600 hover:bg-purple-700 text-white gap-2" 
-                disabled={!comment.trim()}
-              >
+              <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white gap-2" disabled={!comment.trim()}>
                 Submit <Send className="w-4 h-4" />
-              </AnimatedButton>
+              </Button>
             </form>
           </div>
         </div>

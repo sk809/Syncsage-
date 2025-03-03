@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -73,14 +72,6 @@ export default {
         pulse: {
           "0%, 100%": { opacity: "1" },
           "50%": { opacity: "0.5" },
-        },
-        shine: {
-          "0%": { transform: "translateX(-100%)" },
-          "100%": { transform: "translateX(100%)" },
-        },
-        bounce: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
         },
       },
       animation: {
