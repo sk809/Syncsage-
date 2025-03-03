@@ -60,7 +60,7 @@ export const AuthForm = () => {
               id="fullName"
               type="text"
               required
-              className="mt-1 block w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400 transition-all hover:bg-white/15 focus:ring-2 focus:ring-purple-500"
+              className="mt-1 block w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400"
               placeholder="John Doe"
               value={formData.fullName}
               onChange={(e) =>
@@ -78,7 +78,7 @@ export const AuthForm = () => {
             id="email"
             type="email"
             required
-            className="mt-1 block w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400 transition-all hover:bg-white/15 focus:ring-2 focus:ring-purple-500"
+            className="mt-1 block w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400"
             placeholder="you@example.com"
             value={formData.email}
             onChange={(e) =>
@@ -95,7 +95,7 @@ export const AuthForm = () => {
             id="password"
             type="password"
             required
-            className="mt-1 block w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400 transition-all hover:bg-white/15 focus:ring-2 focus:ring-purple-500"
+            className="mt-1 block w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder:text-gray-400"
             placeholder="••••••••"
             value={formData.password}
             onChange={(e) =>
@@ -106,7 +106,7 @@ export const AuthForm = () => {
 
         <Button
           type="submit"
-          className="w-full bg-white text-purple-700 hover:bg-white/90 transition-transform hover:scale-105 active:scale-95"
+          className="w-full bg-white text-purple-700 hover:bg-white/90"
           disabled={loading}
         >
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -118,7 +118,7 @@ export const AuthForm = () => {
           <button
             type="button"
             onClick={() => setIsLogin(!isLogin)}
-            className="text-white hover:underline transition-transform hover:scale-105 inline-block"
+            className="text-white hover:underline"
           >
             {isLogin ? "Sign up" : "Sign in"}
           </button>

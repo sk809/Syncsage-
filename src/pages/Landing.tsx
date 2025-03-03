@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowRight, Zap, Users, Brain, BarChart, Upload, Bot, ListChecks, Gauge, Share2, MessageCircle, Send } from "lucide-react";
@@ -6,11 +5,11 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ChatInterface } from "@/components/Chat/ChatInterface";
-
 const Landing = () => {
   const [comment, setComment] = useState("");
-  const { toast } = useToast();
-  
+  const {
+    toast
+  } = useToast();
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (comment.trim()) {
@@ -21,7 +20,6 @@ const Landing = () => {
       setComment("");
     }
   };
-  
   return <div className="min-h-screen bg-gradient-to-b from-black via-purple-900 to-purple-800">
       {/* Hero Section */}
       <div className="container mx-auto px-4 pt-20 pb-16">
@@ -31,59 +29,38 @@ const Landing = () => {
             <span className="text-xl font-semibold text-white">SyncSage</span>
           </div>
           <Link to="/dashboard">
-            <Button 
-              variant="outline" 
-              className="bg-white/10 text-white border-white/20 hover:bg-white/20 transition-transform hover:scale-105 active:scale-95"
-            >
-              Sign In
-            </Button>
+            <Button variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20">Sign In</Button>
           </Link>
         </nav>
 
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-semibold mb-6 text-white">Your Superhuman content creation Buddy </h1>
+          <h1 className="text-5xl md:text-6xl font-semibold mb-6 text-white">Your Superhuman content creation Buddy </h1>
           <p className="text-xl text-gray-200 mb-8">
             AI-powered tools to help content creators and teams collaborate, create, and grow their audience faster.
           </p>
           <div className="flex gap-4 justify-center mb-16">
             <Link to="/dashboard">
-              <Button 
-                size="lg" 
-                className="bg-white text-purple-700 hover:bg-white/90 gap-2 transition-transform hover:scale-110 active:scale-95"
-              >
+              <Button size="lg" className="bg-white text-purple-700 hover:bg-white/90 gap-2">
                 Get Started <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="border-white/20 text-white bg-white/10 hover:bg-white/20 px-[46px] text-base transition-transform hover:scale-110 active:scale-95"
-            >
+            <Button size="lg" variant="outline" className="border-white/20 text-white bg-white/10 hover:bg-white/20 px-[46px] text-base">
               Watch Demo
             </Button>
           </div>
 
           {/* AI Chat Section */}
-          <div className="max-w-2xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10 mb-16 hover:shadow-lg transition-all hover:scale-[1.02]">
+          <div className="max-w-2xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10 mb-16">
             <h2 className="text-2xl font-semibold text-white mb-6">Try Our AI Assistant</h2>
             <ChatInterface />
           </div>
 
           {/* Leave Your Thoughts Section */}
-          <div className="max-w-2xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10 hover:shadow-lg transition-all hover:scale-[1.02]">
+          <div className="max-w-2xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10">
             <h2 className="text-2xl font-semibold text-white mb-6">Leave Your Thoughts</h2>
             <form onSubmit={handleSubmitComment} className="space-y-4">
-              <textarea 
-                value={comment} 
-                onChange={e => setComment(e.target.value)} 
-                placeholder="Share your feedback or suggestions..." 
-                className="w-full h-32 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent hover:bg-white/15 transition-all" 
-              />
-              <Button 
-                type="submit" 
-                className="bg-purple-600 hover:bg-purple-700 text-white gap-2 transition-transform hover:scale-105 active:scale-95" 
-                disabled={!comment.trim()}
-              >
+              <textarea value={comment} onChange={e => setComment(e.target.value)} placeholder="Share your feedback or suggestions..." className="w-full h-32 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" />
+              <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white gap-2" disabled={!comment.trim()}>
                 Submit <Send className="w-4 h-4" />
               </Button>
             </form>
@@ -95,7 +72,7 @@ const Landing = () => {
       <div className="container mx-auto px-4 py-20">
         <h2 className="text-3xl font-semibold text-center mb-12 text-white">Everything You Need to Create Better Content</h2>
         <div className="grid md:grid-cols-3 gap-8">
-          <Card className="p-6 hover:shadow-lg transition-all hover:scale-105 bg-white/10 border-white/20">
+          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
             <Gauge className="w-12 h-12 text-white mb-4" />
             <h3 className="text-xl font-semibold mb-2 text-white">Integrated Workflow</h3>
             <p className="text-gray-300">
@@ -103,7 +80,7 @@ const Landing = () => {
             </p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-all hover:scale-105 bg-white/10 border-white/20">
+          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
             <Brain className="w-12 h-12 text-white mb-4" />
             <h3 className="text-xl font-semibold mb-2 text-white">Advanced AI Automation</h3>
             <p className="text-gray-300">
@@ -111,7 +88,7 @@ const Landing = () => {
             </p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-all hover:scale-105 bg-white/10 border-white/20">
+          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
             <Users className="w-12 h-12 text-white mb-4" />
             <h3 className="text-xl font-semibold mb-2 text-white">Team Collaboration</h3>
             <p className="text-gray-300">
@@ -119,7 +96,7 @@ const Landing = () => {
             </p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-all hover:scale-105 bg-white/10 border-white/20">
+          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
             <Zap className="w-12 h-12 text-white mb-4" />
             <h3 className="text-xl font-semibold mb-2 text-white">Mind-Relaxation</h3>
             <p className="text-gray-300">
@@ -127,7 +104,7 @@ const Landing = () => {
             </p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-all hover:scale-105 bg-white/10 border-white/20">
+          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
             <Bot className="w-12 h-12 text-white mb-4" />
             <h3 className="text-xl font-semibold mb-2 text-white">Sage Bot</h3>
             <p className="text-gray-300">
@@ -135,7 +112,7 @@ const Landing = () => {
             </p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-all hover:scale-105 bg-white/10 border-white/20">
+          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
             <Share2 className="w-12 h-12 text-white mb-4" />
             <h3 className="text-xl font-semibold mb-2 text-white">Saved Environment</h3>
             <p className="text-gray-300">
@@ -148,7 +125,7 @@ const Landing = () => {
       {/* Additional Features Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-white/10 rounded-xl p-8 border border-white/20 hover:shadow-lg transition-all hover:scale-[1.03]">
+          <div className="bg-white/10 rounded-xl p-8 border border-white/20">
             <ListChecks className="w-12 h-12 text-white mb-4" />
             <h3 className="text-2xl font-semibold mb-4 text-white">Smart Task Management</h3>
             <ul className="space-y-3 text-gray-300">
@@ -167,7 +144,7 @@ const Landing = () => {
             </ul>
           </div>
 
-          <div className="bg-white/10 rounded-xl p-8 border border-white/20 hover:shadow-lg transition-all hover:scale-[1.03]">
+          <div className="bg-white/10 rounded-xl p-8 border border-white/20">
             <MessageCircle className="w-12 h-12 text-white mb-4" />
             <h3 className="text-2xl font-semibold mb-4 text-white">Seamless Communication</h3>
             <ul className="space-y-3 text-gray-300">
