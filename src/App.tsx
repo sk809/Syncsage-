@@ -12,6 +12,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Toaster } from "@/components/ui/toaster";
 import { AppSidebar } from "./components/Sidebar/AppSidebar";
+import Collaboration from "./pages/Collaboration";
 
 function App() {
   return (
@@ -71,7 +72,7 @@ function App() {
                 path="/collaboration"
                 element={
                   <ProtectedRoute>
-                    <Dashboard />
+                    <Collaboration />
                   </ProtectedRoute>
                 }
               />
