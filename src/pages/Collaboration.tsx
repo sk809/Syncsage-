@@ -1,5 +1,8 @@
 
 import { TeamChat } from "@/components/Chat/TeamChat";
+import { InviteMembers } from "@/components/Collaboration/InviteMembers";
+import { CollaborativeWorkspace } from "@/components/Collaboration/CollaborativeWorkspace";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Collaboration() {
   return (
@@ -10,7 +13,25 @@ export default function Collaboration() {
           Work together with your team in real-time
         </p>
         
-        <TeamChat />
+        <Tabs defaultValue="chat" className="mb-8">
+          <TabsList className="mb-6">
+            <TabsTrigger value="chat">Team Chat</TabsTrigger>
+            <TabsTrigger value="workspace">Workspace</TabsTrigger>
+            <TabsTrigger value="invite">Invite Members</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="chat">
+            <TeamChat />
+          </TabsContent>
+          
+          <TabsContent value="workspace">
+            <CollaborativeWorkspace />
+          </TabsContent>
+          
+          <TabsContent value="invite">
+            <InviteMembers />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
