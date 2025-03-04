@@ -27,7 +27,7 @@ const buttonVariants = cva(
         icon: "h-10 w-10",
       },
       animated: {
-        true: "animate-enter",
+        true: "animate-slide-up opacity-0",
         false: "",
       }
     },
@@ -53,6 +53,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <Comp
         className={cn(buttonVariants({ variant, size, animated, className }))}
         ref={ref}
+        style={animated ? { animationFillMode: "forwards", animationDelay: "500ms" } : undefined}
         {...props}
       />
     )
