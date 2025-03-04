@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -80,7 +79,6 @@ export function CollaborativeWorkspace() {
     toast({
       title: "Changes saved",
       description: "Your edits have been auto-saved",
-      variant: "success",
     });
   };
 
