@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,7 +38,6 @@ export function InviteMembers() {
     toast({
       title: "Link copied!",
       description: "Share it with your team members",
-      variant: "success",
     });
 
     // Reset the copied state after 3 seconds
@@ -69,7 +67,6 @@ export function InviteMembers() {
       toast({
         title: "Invitation sent!",
         description: `Invitation sent to ${email}`,
-        variant: "success",
       });
       
       setEmail("");
