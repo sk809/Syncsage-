@@ -16,10 +16,12 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Received request in chat-with-ai function");
     const requestData = await req.json();
     const { messages } = requestData;
 
     if (!messages || !Array.isArray(messages)) {
+      console.error("Invalid request format:", requestData);
       throw new Error("Invalid request: messages array is required");
     }
 
@@ -27,7 +29,7 @@ serve(async (req) => {
 
     if (!GEMINI_API_KEY) {
       console.error("Missing Gemini API key");
-      throw new Error("AI service configuration error: No API key found for Gemini");
+      throw new Error("AI service configuration error: No API key found for Gemini. Please set GEMINI_API_KEY in your Supabase Edge Function secrets.");
     }
 
     console.log("Using Gemini API with proper configuration");
@@ -119,7 +121,8 @@ serve(async (req) => {
     
     return new Response(
       JSON.stringify({ 
-        error: error.message || "Unknown error processing your request" 
+        error: error.message || "Unknown error processing your request",
+        success: false
       }),
       { 
         status: 500, 

@@ -74,6 +74,8 @@ export const ContentCreator = () => {
     setResult("");
 
     try {
+      console.log("Starting content generation process...");
+      
       // Construct the prompt based on what we're generating
       let prompt = "";
       
@@ -91,15 +93,24 @@ export const ContentCreator = () => {
           prompt = `Generate content ideas for ${formData.contentType} about "${formData.topic}"`;
       }
 
+      console.log("Using prompt:", prompt);
+
       const { data, error } = await supabase.functions.invoke("chat-with-ai", {
         body: { 
           messages: [{ role: "user", content: prompt }]
         },
       });
 
-      if (error) throw error;
+      console.log("Response received:", data);
+      console.log("Error (if any):", error);
+
+      if (error) {
+        console.error("Supabase function error:", error);
+        throw new Error(`Supabase function error: ${error.message}`);
+      }
 
       if (!data?.choices?.[0]?.message?.content) {
+        console.error("Invalid AI response structure:", data);
         throw new Error("Invalid response from AI");
       }
 
@@ -109,7 +120,7 @@ export const ContentCreator = () => {
       toast({
         variant: "destructive",
         title: "Generation Failed",
-        description: "Failed to generate content. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to generate content. Please check that GEMINI_API_KEY is set in your Supabase Edge Function secrets.",
       });
     } finally {
       setLoading(false);
