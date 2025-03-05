@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -32,5 +33,33 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  /* Button hover animations */
+  button {
+    @apply transform transition-all duration-300 ease-in-out;
+  }
+}
+
+@keyframes pulse-light {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(79, 70, 229, 0);
+  }
+}
+
+@layer components {
+  .btn-hover-effect {
+    @apply relative overflow-hidden;
+  }
+  
+  .btn-hover-effect::after {
+    @apply content-[''] absolute top-0 left-0 h-full w-0 bg-white/20 transition-all duration-300 ease-out;
+  }
+  
+  .btn-hover-effect:hover::after {
+    @apply w-full;
   }
 }
