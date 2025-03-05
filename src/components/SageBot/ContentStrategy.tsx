@@ -45,15 +45,21 @@ export const ContentStrategy = () => {
     try {
       const prompt = `Create a detailed ${timeframe} content strategy for a ${niche} account on ${platform}. The strategy should include ${frequency} posts, content themes, optimal posting times, content types (video, image, carousel, etc.), and engagement strategies. Format the response in a clear, structured way with sections and bullet points.`;
 
+      console.log("Generating strategy with prompt:", prompt);
+
       const { data, error } = await supabase.functions.invoke("chat-with-ai", {
         body: { 
           messages: [{ role: "user", content: prompt }]
         },
       });
 
+      console.log("Strategy generation response:", data);
+      console.log("Strategy generation error (if any):", error);
+
       if (error) throw error;
 
       if (!data?.choices?.[0]?.message?.content) {
+        console.error("Invalid AI response format:", data);
         throw new Error("Invalid response from AI");
       }
 
@@ -63,7 +69,7 @@ export const ContentStrategy = () => {
       toast({
         variant: "destructive",
         title: "Generation Failed",
-        description: "Failed to generate content strategy. Please try again.",
+        description: "Failed to generate content strategy. Please make sure the OPENAI_API_KEY is set in your Supabase Edge Function secrets.",
       });
     } finally {
       setLoading(false);

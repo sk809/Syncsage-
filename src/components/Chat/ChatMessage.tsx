@@ -17,6 +17,7 @@ export const ChatMessage = ({ role, content }: ChatMessageProps) => {
     
     // Format bullet points
     text = text.replace(/•\s*(.*)/g, '<li class="ml-4">$1</li>');
+    text = text.replace(/-\s*(.*)/g, '<li class="ml-4">$1</li>');
     
     // Convert line breaks to proper spacing
     text = text.replace(/\n\n/g, '</p><p class="mt-3">');

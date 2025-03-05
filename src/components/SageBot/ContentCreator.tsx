@@ -120,7 +120,7 @@ export const ContentCreator = () => {
       toast({
         variant: "destructive",
         title: "Generation Failed",
-        description: error instanceof Error ? error.message : "Failed to generate content. Please check that GEMINI_API_KEY is set in your Supabase Edge Function secrets.",
+        description: error instanceof Error ? error.message : "Failed to generate content. Please check that OPENAI_API_KEY is set in your Supabase Edge Function secrets.",
       });
     } finally {
       setLoading(false);

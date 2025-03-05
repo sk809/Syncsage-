@@ -67,13 +67,13 @@ export const ChatInterface = () => {
       toast({
         variant: "destructive",
         title: "AI Response Error",
-        description: `Failed to get AI response: ${errorMessage}. Please make sure the GEMINI_API_KEY is set in your Supabase Edge Function secrets.`,
+        description: `Failed to get AI response: ${errorMessage}. Please make sure the OPENAI_API_KEY is set in your Supabase Edge Function secrets.`,
       });
       
       // Add a fallback AI response
       setMessages((prev) => [...prev, {
         role: "assistant",
-        content: "I'm sorry, I encountered an error processing your request. Please check that the GEMINI_API_KEY is properly set in the Supabase Edge Function secrets."
+        content: "I'm sorry, I encountered an error processing your request. Please check that the OPENAI_API_KEY is properly set in the Supabase Edge Function secrets."
       }]);
     } finally {
       setLoading(false);
