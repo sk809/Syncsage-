@@ -6,8 +6,8 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Using environment variable for API key with fallback
-const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY") || "";
+// Using environment variable for API key
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") || "";
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -27,54 +27,75 @@ serve(async (req) => {
 
     console.log("Processing request with messages:", JSON.stringify(messages));
 
-    if (!OPENAI_API_KEY) {
-      console.error("Missing OpenAI API key");
-      throw new Error("AI service configuration error: No API key found. Please set OPENAI_API_KEY in your Supabase Edge Function secrets.");
+    if (!GEMINI_API_KEY) {
+      console.error("Missing Gemini API key");
+      throw new Error("AI service configuration error: No API key found. Please set GEMINI_API_KEY in your Supabase Edge Function secrets.");
     }
 
-    console.log("Using OpenAI API with proper configuration");
+    console.log("Using Gemini API with proper configuration");
     
     // Create a prompt based on SageBot's specializations
     const systemMessage = "You are SageBot, an expert AI assistant specializing in content creation, marketing strategies, and social media. You help users generate creative content ideas, viral hooks, trending hashtags, and detailed content strategies. Always provide well-structured, practical advice and creative suggestions. Format your responses with clear headings, bullet points for lists, and keep your tone helpful and encouraging.";
     
-    const apiUrl = 'https://api.openai.com/v1/chat/completions';
+    // Since Gemini doesn't have a direct "system" message concept, we'll add it to the conversation
+    const geminiPrompt = [
+      { role: "user", parts: [{ text: systemMessage }] },
+      { role: "model", parts: [{ text: "I understand. I'll act as SageBot, providing expert advice on content creation, marketing strategies, and social media with well-structured responses." }] }
+    ];
+    
+    // Add user messages
+    for (const message of messages) {
+      if (message.role === "user") {
+        geminiPrompt.push({
+          role: "user",
+          parts: [{ text: message.content }]
+        });
+      } else if (message.role === "assistant") {
+        geminiPrompt.push({
+          role: "model",
+          parts: [{ text: message.content }]
+        });
+      }
+    }
+    
+    const apiUrl = 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent';
     console.log("Making request to:", apiUrl);
     
-    const response = await fetch(apiUrl, {
+    const response = await fetch(`${apiUrl}?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemMessage },
-          ...messages
-        ],
-        temperature: 0.7,
-        max_tokens: 4096,
+        contents: geminiPrompt,
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 4096,
+        },
       }),
     });
     
     // Log the response status for debugging
-    console.log("OpenAI API response status:", response.status);
+    console.log("Gemini API response status:", response.status);
     
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("OpenAI API error:", errorText);
-      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
+      console.error("Gemini API error:", errorText);
+      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
     }
     
-    const openaiData = await response.json();
-    console.log("OpenAI response structure:", JSON.stringify(openaiData));
+    const geminiData = await response.json();
+    console.log("Gemini response structure:", JSON.stringify(geminiData));
     
-    // Transform OpenAI response to match expected format by frontend
+    // Extract the response content from Gemini
+    const generatedContent = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response.";
+    
+    // Transform Gemini response to match expected format by frontend
     const transformedResponse = {
       choices: [{
         message: {
           role: "assistant",
-          content: openaiData.choices[0].message.content
+          content: generatedContent
         }
       }]
     };
