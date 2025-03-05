@@ -50,6 +50,15 @@
   }
 }
 
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) rotate(35deg);
+  }
+  100% {
+    transform: translateX(300%) rotate(35deg);
+  }
+}
+
 @layer components {
   .btn-hover-effect {
     @apply relative overflow-hidden;
@@ -61,5 +70,26 @@
   
   .btn-hover-effect:hover::after {
     @apply w-full;
+  }
+  
+  .btn-hover-effect::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60px;
+    height: 100%;
+    background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: translateX(-100%) rotate(35deg);
+    pointer-events: none;
+  }
+  
+  .btn-hover-effect:hover::before {
+    animation: shine 0.7s ease-in-out;
   }
 }
