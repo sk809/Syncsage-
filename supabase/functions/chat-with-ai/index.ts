@@ -32,7 +32,7 @@ serve(async (req) => {
       throw new Error("AI service configuration error: No API key found. Please set GEMINI_API_KEY in your Supabase Edge Function secrets.");
     }
 
-    console.log("Using Gemini API with proper configuration");
+    console.log("Using Gemini API with key:", GEMINI_API_KEY.substring(0, 3) + "..." + GEMINI_API_KEY.substring(GEMINI_API_KEY.length - 3));
     
     // Create a prompt based on SageBot's specializations
     const systemMessage = "You are SageBot, an expert AI assistant specializing in content creation, marketing strategies, and social media. You help users generate creative content ideas, viral hooks, trending hashtags, and detailed content strategies. Always provide well-structured, practical advice and creative suggestions. Format your responses with clear headings, bullet points for lists, and keep your tone helpful and encouraging.";
@@ -59,7 +59,7 @@ serve(async (req) => {
     }
     
     const apiUrl = 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent';
-    console.log("Making request to:", apiUrl);
+    console.log("Making request to Gemini API");
     
     const response = await fetch(`${apiUrl}?key=${GEMINI_API_KEY}`, {
       method: 'POST',
@@ -70,7 +70,7 @@ serve(async (req) => {
         contents: geminiPrompt,
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 4096,
+          maxOutputTokens: 2048,
         },
       }),
     });
@@ -85,7 +85,7 @@ serve(async (req) => {
     }
     
     const geminiData = await response.json();
-    console.log("Gemini response structure:", JSON.stringify(geminiData));
+    console.log("Gemini response received successfully");
     
     // Extract the response content from Gemini
     const generatedContent = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response.";
@@ -100,7 +100,7 @@ serve(async (req) => {
       }]
     };
     
-    console.log("Transformed response for frontend:", JSON.stringify(transformedResponse));
+    console.log("Sending response to client");
     
     return new Response(
       JSON.stringify(transformedResponse),
