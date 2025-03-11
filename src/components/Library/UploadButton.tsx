@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Loader2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
@@ -8,7 +8,21 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
-export function UploadButton() {
+interface UploadButtonProps {
+  label?: string;
+  icon?: React.ReactNode;
+  acceptTypes?: string;
+  buttonVariant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | "success";
+  onUploadComplete?: (filePath: string) => void;
+}
+
+export function UploadButton({ 
+  label = "Upload Media", 
+  icon = <Plus className="mr-2 h-4 w-4" />, 
+  acceptTypes = "image/*,video/*",
+  buttonVariant = "default",
+  onUploadComplete
+}: UploadButtonProps) {
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -48,6 +62,12 @@ export function UploadButton() {
         title: "Upload successful",
         description: "Your file has been uploaded to the library.",
       });
+      
+      // Call the callback with the file path if provided
+      if (onUploadComplete) {
+        const publicUrl = supabase.storage.from('media').getPublicUrl(filePath).data.publicUrl;
+        onUploadComplete(publicUrl);
+      }
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -64,22 +84,23 @@ export function UploadButton() {
       <Input
         type="file"
         onChange={handleFileUpload}
-        accept="image/*,video/*"
+        accept={acceptTypes}
         disabled={uploading}
         className="hidden"
-        id="file-upload"
+        id={`file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`}
       />
       <Button
         asChild
         disabled={uploading}
+        variant={buttonVariant}
       >
-        <label htmlFor="file-upload" className="cursor-pointer">
+        <label htmlFor={`file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`} className="cursor-pointer">
           {uploading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
-            <Plus className="mr-2 h-4 w-4" />
+            icon
           )}
-          Upload Media
+          {label}
         </label>
       </Button>
     </div>

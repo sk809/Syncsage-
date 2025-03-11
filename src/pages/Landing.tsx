@@ -5,12 +5,16 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ChatInterface } from "@/components/Chat/ChatInterface";
+import { UploadButton } from "@/components/Library/UploadButton";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
 
 const Landing = () => {
   const [comment, setComment] = useState("");
-  const {
-    toast
-  } = useToast();
+  const [demoVideoUrl, setDemoVideoUrl] = useState<string | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { toast } = useToast();
+
   const handleSubmitComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (comment.trim()) {
@@ -21,8 +25,43 @@ const Landing = () => {
       setComment("");
     }
   };
+
+  const handleVideoDemoClick = () => {
+    const checkForDemoVideo = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('media_files')
+          .select('*')
+          .eq('filename', 'app_demo.mp4')
+          .order('created_at', { ascending: false })
+          .limit(1);
+
+        if (!error && data && data.length > 0) {
+          const videoUrl = supabase.storage.from('media').getPublicUrl(data[0].file_path).data.publicUrl;
+          setDemoVideoUrl(videoUrl);
+          setIsDialogOpen(true);
+        } else {
+          setDemoVideoUrl(null);
+          setIsDialogOpen(true);
+        }
+      } catch (error) {
+        console.error("Error fetching demo video:", error);
+        setIsDialogOpen(true);
+      }
+    };
+
+    checkForDemoVideo();
+  };
+
+  const handleUploadComplete = (videoUrl: string) => {
+    setDemoVideoUrl(videoUrl);
+    toast({
+      title: "Demo video updated",
+      description: "Your demo video has been successfully uploaded and is now available for viewing."
+    });
+  };
+
   return <div className="min-h-screen bg-gradient-to-b from-black via-purple-900 to-purple-800">
-      {/* Hero Section */}
       <div className="container mx-auto px-4 pt-20 pb-16">
         <nav className="flex justify-between items-center mb-16">
           <div className="flex items-center gap-2">
@@ -47,18 +86,16 @@ const Landing = () => {
                 Get Started <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
-            <Button size="lg" variant="outline" animated className="border-white/20 text-white bg-white/10 hover:bg-white/20 px-[46px] text-base">
+            <Button size="lg" variant="outline" animated className="border-white/20 text-white bg-white/10 hover:bg-white/20 px-[46px] text-base" onClick={handleVideoDemoClick}>
               Watch Demo
             </Button>
           </div>
 
-          {/* AI Chat Section */}
           <div className="max-w-2xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10 mb-16">
             <h2 className="text-2xl font-semibold text-white mb-6 animate-slide-up opacity-0" style={{ animationDelay: "300ms", animationFillMode: "forwards" }}>Try Our AI Assistant</h2>
             <ChatInterface />
           </div>
 
-          {/* Leave Your Thoughts Section */}
           <div className="max-w-2xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10">
             <h2 className="text-2xl font-semibold text-white mb-6 animate-slide-up opacity-0" style={{ animationDelay: "300ms", animationFillMode: "forwards" }}>Leave Your Thoughts</h2>
             <form onSubmit={handleSubmitComment} className="space-y-4">
@@ -71,7 +108,6 @@ const Landing = () => {
         </div>
       </div>
 
-      {/* Features Section */}
       <div className="container mx-auto px-4 py-20">
         <h2 className="text-3xl font-semibold text-center mb-12 text-white animate-slide-up opacity-0" style={{ animationDelay: "200ms", animationFillMode: "forwards" }}>Everything You Need to Create Better Content</h2>
         <div className="grid md:grid-cols-3 gap-8">
@@ -125,7 +161,6 @@ const Landing = () => {
         </div>
       </div>
 
-      {/* Additional Features Section */}
       <div className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-white/10 rounded-xl p-8 border border-white/20">
@@ -168,7 +203,6 @@ const Landing = () => {
         </div>
       </div>
 
-      {/* Footer */}
       <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-between items-center">
@@ -180,6 +214,51 @@ const Landing = () => {
           </div>
         </div>
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">App Demo Video</DialogTitle>
+            <DialogDescription>
+              {demoVideoUrl ? "Watch our app demo to see how SyncSage can supercharge your content creation workflow." : "Upload a demo video to showcase your app's features."}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {demoVideoUrl ? (
+            <div className="mt-4 aspect-video rounded-md overflow-hidden bg-black">
+              <video 
+                src={demoVideoUrl} 
+                controls 
+                className="w-full h-full object-contain" 
+                poster="/placeholder.svg"
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-10 gap-4">
+              <p className="text-gray-500 mb-4">No demo video has been uploaded yet. Please upload one now:</p>
+              <UploadButton 
+                label="Upload Demo Video" 
+                icon={<Upload className="mr-2 h-4 w-4" />}
+                acceptTypes="video/*"
+                buttonVariant="default"
+                onUploadComplete={handleUploadComplete}
+              />
+            </div>
+          )}
+
+          {demoVideoUrl && (
+            <div className="mt-4 flex justify-center">
+              <UploadButton 
+                label="Replace Demo Video" 
+                icon={<Upload className="mr-2 h-4 w-4" />}
+                acceptTypes="video/*"
+                buttonVariant="outline"
+                onUploadComplete={handleUploadComplete}
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>;
 };
 export default Landing;
