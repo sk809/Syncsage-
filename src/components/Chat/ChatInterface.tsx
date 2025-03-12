@@ -92,15 +92,10 @@ export const ChatInterface = () => {
   };
 
   return (
-    <div className={`flex flex-col ${isLandingPage ? "h-[400px]" : "h-[600px]"} bg-white rounded-lg shadow-lg relative overflow-hidden`}>
-      {/* Animated background ornaments */}
-      <div aria-hidden="true" className="floating-orb w-20 h-20 top-5 left-10 animate-delay-0"></div>
-      <div aria-hidden="true" className="floating-orb w-32 h-32 bottom-20 right-5 animate-delay-1000"></div>
-      <div aria-hidden="true" className="floating-orb w-16 h-16 bottom-10 left-20 animate-delay-2000"></div>
-      
+    <div className={`flex flex-col ${isLandingPage ? "h-[400px]" : "h-[600px]"} bg-white rounded-lg shadow-lg`}>
       {messages.length === 0 && (
-        <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4 relative z-10">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center floating">
+        <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4">
+          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center">
             <Bot className="w-8 h-8 text-white" />
           </div>
           <h3 className="text-xl font-medium text-gray-900">Sage Bot</h3>
@@ -116,7 +111,7 @@ export const ChatInterface = () => {
         </div>
       )}
       
-      <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${messages.length > 0 ? 'block' : 'hidden'} relative z-10`}>
+      <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${messages.length > 0 ? 'block' : 'hidden'}`}>
         {messages.map((message, index) => (
           <ChatMessage key={index} role={message.role} content={message.content} />
         ))}
@@ -127,20 +122,20 @@ export const ChatInterface = () => {
         )}
       </div>
       
-      <form onSubmit={handleSubmit} className="border-t p-4 relative z-10">
+      <form onSubmit={handleSubmit} className="border-t p-4">
         <div className="flex gap-2">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask Sage Bot anything..."
-            className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary shadow-sm transition-all duration-300 hover:shadow-md"
+            className="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
             disabled={loading}
           />
           <Button 
             type="submit" 
             disabled={loading}
-            className={isLandingPage ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-sm hover:shadow-lg hover:shadow-purple-500/20" : ""}
+            className={isLandingPage ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700" : ""}
           >
             {loading ? (
               <Loader2 className="w-4 h-4 animate-spin" />
