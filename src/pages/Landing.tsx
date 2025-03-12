@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight, Zap, Users, Brain, BarChart, Upload, Bot, ListChecks, Gauge, Share2, MessageCircle, Send } from "lucide-react";
+import { ArrowRight, Zap, Users, Brain, BarChart, Upload, Bot, ListChecks, Gauge, Share2, MessageCircle, Send, Stars, Sparkles, Lightbulb } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -61,10 +61,29 @@ const Landing = () => {
     });
   };
 
-  return <div className="min-h-screen bg-gradient-to-b from-black via-purple-900 to-purple-800">
-      <div className="container mx-auto px-4 pt-20 pb-16">
+  return <div className="min-h-screen bg-gradient-to-b from-black via-purple-900 to-purple-800 relative overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[10%] left-[5%] w-32 h-32 rounded-full bg-purple-500/20 blur-3xl spinning"></div>
+        <div className="absolute top-[40%] right-[10%] w-64 h-64 rounded-full bg-indigo-500/10 blur-3xl floating"></div>
+        <div className="absolute bottom-[20%] left-[15%] w-48 h-48 rounded-full bg-violet-500/15 blur-3xl spinning" style={{ animationDuration: '20s' }}></div>
+        
+        <div className="absolute top-[15%] right-[20%] text-yellow-300/80 pulse-glow">
+          <Sparkles size={24} />
+        </div>
+        <div className="absolute top-[35%] left-[25%] text-yellow-200/80 pulse-glow" style={{ animationDelay: '1s' }}>
+          <Stars size={20} />
+        </div>
+        <div className="absolute bottom-[40%] right-[30%] text-yellow-300/80 pulse-glow" style={{ animationDelay: '2s' }}>
+          <Sparkles size={16} />
+        </div>
+        <div className="absolute bottom-[15%] left-[40%] text-yellow-200/80 pulse-glow" style={{ animationDelay: '1.5s' }}>
+          <Stars size={18} />
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 pt-20 pb-16 relative z-10">
         <nav className="flex justify-between items-center mb-16">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 floating" style={{ animationDuration: '4s' }}>
             <Zap className="w-8 h-8 text-white" />
             <span className="text-xl font-semibold text-white">SyncSage</span>
           </div>
@@ -82,7 +101,7 @@ const Landing = () => {
           </p>
           <div className="flex gap-4 justify-center mb-16 animate-fade-in opacity-0" style={{ animationDelay: "600ms", animationFillMode: "forwards" }}>
             <Link to="/dashboard">
-              <Button size="lg" animated className="bg-white text-purple-700 hover:bg-white/90 gap-2">
+              <Button size="lg" animated className="bg-white text-purple-700 hover:bg-white/90 gap-2 shadow-lg hover:shadow-xl hover:shadow-white/20 transition-all">
                 Get Started <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
@@ -91,7 +110,10 @@ const Landing = () => {
             </Button>
           </div>
 
-          <div className="max-w-2xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10 mb-16">
+          <div className="max-w-2xl mx-auto bg-white/5 rounded-xl p-8 border border-white/10 mb-16 relative overflow-hidden">
+            <div className="absolute -top-12 -right-12 w-24 h-24 text-indigo-200/30 spinning" style={{ animationDuration: '30s' }}>
+              <Lightbulb size={96} />
+            </div>
             <h2 className="text-2xl font-semibold text-white mb-6 animate-slide-up opacity-0" style={{ animationDelay: "300ms", animationFillMode: "forwards" }}>Try Our AI Assistant</h2>
             <ChatInterface />
           </div>
@@ -108,51 +130,51 @@ const Landing = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-4 py-20 relative z-10">
         <h2 className="text-3xl font-semibold text-center mb-12 text-white animate-slide-up opacity-0" style={{ animationDelay: "200ms", animationFillMode: "forwards" }}>Everything You Need to Create Better Content</h2>
         <div className="grid md:grid-cols-3 gap-8">
-          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
-            <Gauge className="w-12 h-12 text-white mb-4" />
+          <Card className="p-6 hover:shadow-lg transition-all duration-300 bg-white/10 border-white/20 hover:bg-white/15 hover:-translate-y-1">
+            <Gauge className="w-12 h-12 text-white mb-4 floating" style={{ animationDuration: '3s', animationDelay: '0.1s' }} />
             <h3 className="text-xl font-semibold mb-2 text-white">Integrated Workflow</h3>
             <p className="text-gray-300">
               All-in-one dashboard for content generation, editing, team collaboration, and analytics. Upload to multiple platforms with one click.
             </p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
-            <Brain className="w-12 h-12 text-white mb-4" />
+          <Card className="p-6 hover:shadow-lg transition-all duration-300 bg-white/10 border-white/20 hover:bg-white/15 hover:-translate-y-1">
+            <Brain className="w-12 h-12 text-white mb-4 floating" style={{ animationDuration: '3.5s', animationDelay: '0.2s' }} />
             <h3 className="text-xl font-semibold mb-2 text-white">Advanced AI Automation</h3>
             <p className="text-gray-300">
               Auto-generate shorts, extract key moments, create captions, and get AI-powered hashtag suggestions.
             </p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
-            <Users className="w-12 h-12 text-white mb-4" />
+          <Card className="p-6 hover:shadow-lg transition-all duration-300 bg-white/10 border-white/20 hover:bg-white/15 hover:-translate-y-1">
+            <Users className="w-12 h-12 text-white mb-4 floating" style={{ animationDuration: '3.2s', animationDelay: '0.3s' }} />
             <h3 className="text-xl font-semibold mb-2 text-white">Team Collaboration</h3>
             <p className="text-gray-300">
               Real-time editing, team chat, feedback system, and streamlined approval workflows.
             </p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
-            <Zap className="w-12 h-12 text-white mb-4" />
+          <Card className="p-6 hover:shadow-lg transition-all duration-300 bg-white/10 border-white/20 hover:bg-white/15 hover:-translate-y-1">
+            <Zap className="w-12 h-12 text-white mb-4 floating" style={{ animationDuration: '3.3s', animationDelay: '0.4s' }} />
             <h3 className="text-xl font-semibold mb-2 text-white">Mind-Relaxation</h3>
             <p className="text-gray-300">
               Built-in binaural beats, nature sounds, and smart break reminders for creative well-being.
             </p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
-            <Bot className="w-12 h-12 text-white mb-4" />
+          <Card className="p-6 hover:shadow-lg transition-all duration-300 bg-white/10 border-white/20 hover:bg-white/15 hover:-translate-y-1">
+            <Bot className="w-12 h-12 text-white mb-4 floating" style={{ animationDuration: '3.4s', animationDelay: '0.5s' }} />
             <h3 className="text-xl font-semibold mb-2 text-white">Sage Bot</h3>
             <p className="text-gray-300">
               Smart assistant that helps locate and share media files from your folders in real-time.
             </p>
           </Card>
 
-          <Card className="p-6 hover:shadow-lg transition-shadow bg-white/10 border-white/20">
-            <Share2 className="w-12 h-12 text-white mb-4" />
+          <Card className="p-6 hover:shadow-lg transition-all duration-300 bg-white/10 border-white/20 hover:bg-white/15 hover:-translate-y-1">
+            <Share2 className="w-12 h-12 text-white mb-4 floating" style={{ animationDuration: '3.5s', animationDelay: '0.6s' }} />
             <h3 className="text-xl font-semibold mb-2 text-white">Saved Environment</h3>
             <p className="text-gray-300">
               Organize and save ideas, posts, and content from any platform through our browser extension.
@@ -161,104 +183,8 @@ const Landing = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-16 relative z-10">
         <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-white/10 rounded-xl p-8 border border-white/20">
-            <ListChecks className="w-12 h-12 text-white mb-4" />
-            <h3 className="text-2xl font-semibold mb-4 text-white animate-slide-up opacity-0" style={{ animationDelay: "250ms", animationFillMode: "forwards" }}>Smart Task Management</h3>
-            <ul className="space-y-3 text-gray-300">
-              <li className="flex items-center gap-2">
-                <ArrowRight className="w-4 h-4" />
-                Track content ideas and upcoming projects
-              </li>
-              <li className="flex items-center gap-2">
-                <ArrowRight className="w-4 h-4" />
-                Monitor content status (draft, published)
-              </li>
-              <li className="flex items-center gap-2">
-                <ArrowRight className="w-4 h-4" />
-                Schedule team meetings and deadlines
-              </li>
-            </ul>
-          </div>
+            <ListChecks className="w-12 h-12 text-white mb-4 floating" style={{ animationDuration: '3.6
 
-          <div className="bg-white/10 rounded-xl p-8 border border-white/20">
-            <MessageCircle className="w-12 h-12 text-white mb-4" />
-            <h3 className="text-2xl font-semibold mb-4 text-white animate-slide-up opacity-0" style={{ animationDelay: "250ms", animationFillMode: "forwards" }}>Seamless Communication</h3>
-            <ul className="space-y-3 text-gray-300">
-              <li className="flex items-center gap-2">
-                <ArrowRight className="w-4 h-4" />
-                Real-time team chat and collaboration
-              </li>
-              <li className="flex items-center gap-2">
-                <ArrowRight className="w-4 h-4" />
-                Instant feedback on content
-              </li>
-              <li className="flex items-center gap-2">
-                <ArrowRight className="w-4 h-4" />
-                Streamlined approval process
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-white/10">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Zap className="w-6 h-6 text-white" />
-              <span className="font-semibold text-white">Syncsage</span>
-            </div>
-            <p className="text-gray-300">© 2024 Syncsage All rights reserved.</p>
-          </div>
-        </div>
-      </div>
-
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">App Demo Video</DialogTitle>
-            <DialogDescription>
-              {demoVideoUrl ? "Watch our app demo to see how SyncSage can supercharge your content creation workflow." : "Upload a demo video to showcase your app's features."}
-            </DialogDescription>
-          </DialogHeader>
-          
-          {demoVideoUrl ? (
-            <div className="mt-4 aspect-video rounded-md overflow-hidden bg-black">
-              <video 
-                src={demoVideoUrl} 
-                controls 
-                className="w-full h-full object-contain" 
-                poster="/placeholder.svg"
-              />
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-10 gap-4">
-              <p className="text-gray-500 mb-4">No demo video has been uploaded yet. Please upload one now:</p>
-              <UploadButton 
-                label="Upload Demo Video" 
-                icon={<Upload className="mr-2 h-4 w-4" />}
-                acceptTypes="video/*"
-                buttonVariant="default"
-                onUploadComplete={handleUploadComplete}
-              />
-            </div>
-          )}
-
-          {demoVideoUrl && (
-            <div className="mt-4 flex justify-center">
-              <UploadButton 
-                label="Replace Demo Video" 
-                icon={<Upload className="mr-2 h-4 w-4" />}
-                acceptTypes="video/*"
-                buttonVariant="outline"
-                onUploadComplete={handleUploadComplete}
-              />
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </div>;
-};
-export default Landing;
