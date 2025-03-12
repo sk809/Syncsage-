@@ -6,8 +6,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Using environment variable for API key
-const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") || "";
+// Log which environment variables are available (without revealing their values)
+console.log("Available environment variables:", Object.keys(Deno.env.toObject()));
+
+// Try multiple possible environment variable names
+const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY") || 
+                      Deno.env.get("GEMINI_KEY_API") || 
+                      Deno.env.get("GOOGLE_API_KEY") || 
+                      "";
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -17,6 +23,15 @@ serve(async (req) => {
 
   try {
     console.log("Received request in chat-with-ai function");
+    
+    // Log if we have a key (without revealing the actual key)
+    if (GEMINI_API_KEY) {
+      console.log("Gemini API key found with length:", GEMINI_API_KEY.length);
+      console.log("Key starts with:", GEMINI_API_KEY.substring(0, 3) + "...");
+    } else {
+      console.error("No Gemini API key found in any of the expected environment variables");
+    }
+    
     const requestData = await req.json();
     const { messages } = requestData;
 
@@ -31,8 +46,6 @@ serve(async (req) => {
       console.error("Missing Gemini API key");
       throw new Error("AI service configuration error: No API key found. Please set GEMINI_API_KEY in your Supabase Edge Function secrets.");
     }
-
-    console.log("Using Gemini API with key:", GEMINI_API_KEY.substring(0, 3) + "..." + GEMINI_API_KEY.substring(GEMINI_API_KEY.length - 3));
     
     // Create a prompt based on SageBot's specializations
     const systemMessage = "You are SageBot, an expert AI assistant specializing in content creation, marketing strategies, and social media. You help users generate creative content ideas, viral hooks, trending hashtags, and detailed content strategies. Always provide well-structured, practical advice and creative suggestions. Format your responses with clear headings, bullet points for lists, and keep your tone helpful and encouraging.";
@@ -60,6 +73,8 @@ serve(async (req) => {
     
     const apiUrl = 'https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent';
     console.log("Making request to Gemini API");
+    
+    console.log("Full API URL being called:", `${apiUrl}?key=${GEMINI_API_KEY.substring(0, 3)}...`);
     
     const response = await fetch(`${apiUrl}?key=${GEMINI_API_KEY}`, {
       method: 'POST',

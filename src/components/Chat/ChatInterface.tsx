@@ -16,6 +16,7 @@ export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [apiKeyError, setApiKeyError] = useState(false);
   const { toast } = useToast();
   const location = useLocation();
   const isLandingPage = location.pathname === "/";
@@ -28,6 +29,7 @@ export const ChatInterface = () => {
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
+    setApiKeyError(false);
 
     try {
       // Make the API call with detailed console logging for debugging
@@ -59,21 +61,30 @@ export const ChatInterface = () => {
     } catch (error) {
       console.error('Chat error:', error);
       
-      // More descriptive error message for the user
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : "Unknown error occurred";
-        
+      // Check if the error is related to the API key
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      const isApiKeyError = errorMessage.includes("API key") || 
+                           errorMessage.includes("GEMINI_API_KEY") || 
+                           errorMessage.includes("configuration error");
+      
+      if (isApiKeyError) {
+        setApiKeyError(true);
+      }
+      
       toast({
         variant: "destructive",
         title: "AI Response Error",
-        description: `Failed to get AI response: ${errorMessage}. Please make sure the GEMINI_API_KEY is set in your Supabase Edge Function secrets.`,
+        description: `Failed to get AI response: ${errorMessage}. ${isApiKeyError ? 
+          "Please make sure the GEMINI_API_KEY is set in your Supabase Edge Function secrets." : 
+          "Please try again later."}`,
       });
       
       // Add a fallback AI response
       setMessages((prev) => [...prev, {
         role: "assistant",
-        content: "I'm sorry, I encountered an error processing your request. Please check that the GEMINI_API_KEY is properly set in the Supabase Edge Function secrets."
+        content: isApiKeyError ? 
+          "I'm sorry, I encountered an error processing your request. It looks like there's an issue with the API key configuration. Please make sure the GEMINI_API_KEY is properly set in the Supabase Edge Function secrets." : 
+          "I'm sorry, I encountered an error processing your request. Please try again in a moment."
       }]);
     } finally {
       setLoading(false);
@@ -91,6 +102,12 @@ export const ChatInterface = () => {
           <p className="text-gray-500 max-w-sm">
             Hey there! I'm Sage Bot, your AI content assistant. Ask me anything about content creation, analytics, or strategy!
           </p>
+          {apiKeyError && (
+            <div className="mt-2 p-3 bg-red-50 text-red-700 rounded-md text-sm">
+              <p className="font-semibold">API Key Configuration Error</p>
+              <p>The GEMINI_API_KEY is not properly configured in the Supabase Edge Function secrets.</p>
+            </div>
+          )}
         </div>
       )}
       
@@ -127,7 +144,13 @@ export const ChatInterface = () => {
             )}
           </Button>
         </div>
+        {apiKeyError && (
+          <div className="mt-3 p-2 bg-red-50 text-red-700 rounded-md text-xs">
+            API key error detected. Please check the GEMINI_API_KEY in Supabase Edge Function secrets.
+          </div>
+        )}
       </form>
     </div>
   );
 };
+
