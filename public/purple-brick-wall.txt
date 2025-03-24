@@ -1,0 +1,4 @@
+Please download the purple brick wall background image from this URL:
+https://i.ibb.co/3T3LyYC/purple-brick-wall.jpg
+
+Save it as "purple-brick-wall.jpg" in your project's public folder. 

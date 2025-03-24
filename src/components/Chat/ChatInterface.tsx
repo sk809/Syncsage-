@@ -1,90 +1,59 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, Send, Bot } from "lucide-react";
+import { Loader2, Send, Bot, AlertCircle } from "lucide-react";
 import { ChatMessage } from "./ChatMessage";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "react-router-dom";
-
-interface Message {
-  role: "assistant" | "user";
-  content: string;
-}
+import { useGemini } from "@/contexts/GeminiContext";
+import { chatWithGemini, Message } from "@/lib/gemini";
 
 export const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const [apiKeyError, setApiKeyError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const location = useLocation();
+  const { apiKey } = useGemini();
   const isLandingPage = location.pathname === "/";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || loading) return;
 
+    setError(null);
     const userMessage: Message = { role: "user", content: input.trim() };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setLoading(true);
-    setApiKeyError(false);
 
     try {
-      // Make the API call with detailed console logging for debugging
-      console.log("Sending message to AI:", userMessage);
-      console.log("All messages being sent:", [...messages, userMessage]);
+      // Call the Gemini API directly
+      const response = await chatWithGemini([...messages, userMessage], apiKey);
       
-      const { data, error } = await supabase.functions.invoke("chat-with-ai", {
-        body: { messages: [...messages, userMessage] },
-      });
-
-      console.log("Response from AI service:", data);
-      
-      if (error) {
-        console.error("Supabase function error:", error);
-        throw error;
-      }
-
-      if (!data?.choices?.[0]?.message?.content) {
-        console.error("Invalid AI response structure:", data);
-        throw new Error("Invalid response from AI");
-      }
-
+      // If we got a response back, add it to messages
       const assistantMessage: Message = {
         role: "assistant",
-        content: data.choices[0].message.content,
+        content: response,
       };
       
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Chat error:', error);
       
-      // Check if the error is related to the API key
       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
-      const isApiKeyError = errorMessage.includes("API key") || 
-                           errorMessage.includes("GEMINI_API_KEY") || 
-                           errorMessage.includes("configuration error");
-      
-      if (isApiKeyError) {
-        setApiKeyError(true);
-      }
+      setError(errorMessage);
       
       toast({
         variant: "destructive",
         title: "AI Response Error",
-        description: `Failed to get AI response: ${errorMessage}. ${isApiKeyError ? 
-          "Please make sure the GEMINI_API_KEY is set in your Supabase Edge Function secrets." : 
-          "Please try again later."}`,
+        description: `Failed to get AI response. Please try again later.`,
       });
       
-      // Add a fallback AI response
+      // Our updated gemini.ts handles errors gracefully, but in case we get one here:
       setMessages((prev) => [...prev, {
         role: "assistant",
-        content: isApiKeyError ? 
-          "I'm sorry, I encountered an error processing your request. It looks like there's an issue with the API key configuration. Please make sure the GEMINI_API_KEY is properly set in the Supabase Edge Function secrets." : 
-          "I'm sorry, I encountered an error processing your request. Please try again in a moment."
+        content: "I'm sorry, I encountered an error processing your request. Please try again in a moment."
       }]);
     } finally {
       setLoading(false);
@@ -102,12 +71,6 @@ export const ChatInterface = () => {
           <p className="text-gray-500 max-w-sm">
             Hey there! I'm Sage Bot, your AI content assistant. Ask me anything about content creation, analytics, or strategy!
           </p>
-          {apiKeyError && (
-            <div className="mt-2 p-3 bg-red-50 text-red-700 rounded-md text-sm">
-              <p className="font-semibold">API Key Configuration Error</p>
-              <p>The GEMINI_API_KEY is not properly configured in the Supabase Edge Function secrets.</p>
-            </div>
-          )}
         </div>
       )}
       
@@ -118,6 +81,15 @@ export const ChatInterface = () => {
         {loading && (
           <div className="flex justify-center py-2">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          </div>
+        )}
+        {error && (
+          <div className="p-3 bg-red-50 text-red-700 rounded-md flex items-start gap-2">
+            <AlertCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-medium">Connection error</p>
+              <p className="text-sm">There was a problem connecting to the AI service. Please try again.</p>
+            </div>
           </div>
         )}
       </div>
@@ -144,11 +116,6 @@ export const ChatInterface = () => {
             )}
           </Button>
         </div>
-        {apiKeyError && (
-          <div className="mt-3 p-2 bg-red-50 text-red-700 rounded-md text-xs">
-            API key error detected. Please check the GEMINI_API_KEY in Supabase Edge Function secrets.
-          </div>
-        )}
       </form>
     </div>
   );

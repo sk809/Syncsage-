@@ -1,4 +1,3 @@
-
 import { KanbanBoard } from "@/components/Kanban/KanbanBoard";
 import { 
   Bot, 
@@ -20,6 +19,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { SimpleScheduler } from "@/components/SimpleScheduler/SimpleScheduler";
 
 const DashboardSection = ({ 
   id, 
@@ -111,6 +111,27 @@ const TaskItem = ({ title, status, dueDate }: { title: string; status: "pending"
 };
 
 const Dashboard = () => {
+  // Sample library content
+  const sampleLibraryContent = [
+    {
+      id: "1",
+      title: "Summer Campaign Video",
+      type: "video" as const,
+      thumbnail: "/video-thumbnail.jpg"
+    },
+    {
+      id: "2",
+      title: "Product Launch Post",
+      type: "image" as const,
+      thumbnail: "/product-image.jpg"
+    },
+    {
+      id: "3",
+      title: "Weekly Blog Update",
+      type: "text" as const
+    }
+  ];
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">Content Creation Dashboard</h1>
@@ -139,7 +160,7 @@ const Dashboard = () => {
         />
       </div>
       
-      {/* Quick Access Sections */}
+      {/* Scheduler & Task Summary Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Task Summary */}
         <Card>
@@ -162,36 +183,39 @@ const Dashboard = () => {
             </Button>
           </CardContent>
         </Card>
-        
-        {/* AI Assistant Quick Access */}
-        <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-100">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bot className="w-5 h-5 text-primary" />
-              SageBot AI Assistant
-            </CardTitle>
-            <CardDescription>Your AI-powered content creation assistant</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="bg-white p-4 rounded-lg border mb-4">
-              <p className="text-sm text-gray-600 italic">
-                "Need help with content ideas or caption writing? Ask me anything about your content strategy!"
-              </p>
-            </div>
-            <div className="flex space-x-2">
-              <Button asChild className="flex-1" variant="outline">
-                <Link to="/sage-bot">Generate Content</Link>
-              </Button>
-              <Button asChild>
-                <Link to="/sage-bot">
-                  Chat with SageBot
-                  <Bot className="ml-2 w-4 h-4" />
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+
+        {/* Simple Scheduler */}
+        <SimpleScheduler libraryContent={sampleLibraryContent} />
       </div>
+      
+      {/* AI Assistant Quick Access */}
+      <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-purple-100">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bot className="w-5 h-5 text-primary" />
+            SageBot AI Assistant
+          </CardTitle>
+          <CardDescription>Your AI-powered content creation assistant</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-white p-4 rounded-lg border mb-4">
+            <p className="text-sm text-gray-600 italic">
+              "Need help with content ideas or caption writing? Ask me anything about your content strategy!"
+            </p>
+          </div>
+          <div className="flex space-x-2">
+            <Button asChild className="flex-1" variant="outline">
+              <Link to="/sage-bot">Generate Content</Link>
+            </Button>
+            <Button asChild>
+              <Link to="/sage-bot">
+                Chat with SageBot
+                <Bot className="ml-2 w-4 h-4" />
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
       
       {/* Project Progress & Social Media Performance */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

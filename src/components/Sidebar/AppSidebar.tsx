@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
@@ -6,8 +5,6 @@ import {
   Bot,
   Archive,
   ListTodo,
-  Users,
-  Brain,
   ChartBar,
   Settings,
   ChevronLeft,
@@ -36,16 +33,6 @@ const menuItems = [
     title: "To-Do List",
     icon: ListTodo,
     path: "/tasks",
-  },
-  {
-    title: "Real-Time Collaboration",
-    icon: Users,
-    path: "/collaboration",
-  },
-  {
-    title: "Mind-Relaxation Mode",
-    icon: Brain,
-    path: "/relax",
   },
   {
     title: "Analytics & Insights",

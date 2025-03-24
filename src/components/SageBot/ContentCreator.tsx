@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { 
   Card, 
@@ -25,9 +24,12 @@ import {
   TabsTrigger 
 } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
-import { Loader2, Lightbulb, Hash, TrendingUp, Save, Copy, RotateCcw } from "lucide-react";
+import { Loader2, Lightbulb, Hash, TrendingUp, Save, Copy, RotateCcw, RefreshCcw, Sparkles, LightbulbIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useGemini } from "@/contexts/GeminiContext";
+import { chatWithGemini, Message } from "@/lib/gemini";
 import { supabase } from "@/integrations/supabase/client";
+import { cleanCssFromText } from "@/lib/utils";
 
 interface ContentRequest {
   topic: string;
@@ -50,6 +52,7 @@ export const ContentCreator = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string>("");
   const { toast } = useToast();
+  const { apiKey } = useGemini();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -61,66 +64,38 @@ export const ContentCreator = () => {
   };
 
   const generateContent = async () => {
-    if (!formData.topic) {
-      toast({
-        variant: "destructive",
-        title: "Topic Required",
-        description: "Please enter a topic for your content",
-      });
-      return;
-    }
-
+    if (!formData.topic) return;
+    
     setLoading(true);
     setResult("");
-
+    
     try {
-      console.log("Starting content generation process...");
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Construct the prompt based on what we're generating
-      let prompt = "";
-      
-      switch (activeTab) {
-        case "ideas":
-          prompt = `Generate 5 creative content ideas for ${formData.contentType} about "${formData.topic}". The tone should be ${formData.tone}. Content length: ${formData.contentLength}. ${formData.additionalInfo}`;
+      // Get mock response based on content type
+      let mockResponse = "";
+      switch (formData.contentType) {
+        case "instagram":
+          mockResponse = `📸 *${formData.topic}* 📸\n\nHave you ever wondered about ${formData.topic}? Here's what I discovered!\n\n${formData.tone === "humorous" ? "😂 " : ""}This ${formData.contentLength === "short" ? "quick" : "deep-dive"} exploration of ${formData.topic} changed how I see things.\n\n${formData.additionalInfo ? formData.additionalInfo + "\n\n" : ""}What's your experience with this? Share below! 👇\n\n#${formData.topic.replace(/\s+/g, '')} #ContentCreation #Trending`;
           break;
-        case "hooks":
-          prompt = `Create 5 attention-grabbing viral hooks for ${formData.contentType} content about "${formData.topic}". The tone should be ${formData.tone}. ${formData.additionalInfo}`;
-          break;
-        case "hashtags":
-          prompt = `Generate 15 effective hashtags for ${formData.contentType} content about "${formData.topic}", organized by popularity and relevance. ${formData.additionalInfo}`;
+        case "tiktok":
+          mockResponse = `TikTok Script - ${formData.topic}\n\n[Hook] You won't believe what happens when you learn about ${formData.topic}!\n\n[Main Content]\n- Point 1: Introduction to ${formData.topic}\n- Point 2: Why it matters\n- Point 3: How to use this info\n\n[Call to Action]\nFollow for more ${formData.contentType} content! Comment your thoughts below!`;
           break;
         default:
-          prompt = `Generate content ideas for ${formData.contentType} about "${formData.topic}"`;
+          mockResponse = `# Content about ${formData.topic}\n\nThis is a ${formData.tone} piece about ${formData.topic}. The length is ${formData.contentLength}.\n\n## Main Points\n\n1. First point about ${formData.topic}\n2. Second interesting fact\n3. Conclusion and thoughts\n\n${formData.additionalInfo ? "Additional context: " + formData.additionalInfo : ""}`;
       }
-
-      console.log("Using prompt:", prompt);
-
-      const { data, error } = await supabase.functions.invoke("chat-with-ai", {
-        body: { 
-          messages: [{ role: "user", content: prompt }]
-        },
-      });
-
-      console.log("Response received:", data);
-      console.log("Error (if any):", error);
-
-      if (error) {
-        console.error("Supabase function error:", error);
-        throw new Error(`Supabase function error: ${error.message}`);
-      }
-
-      if (!data?.choices?.[0]?.message?.content) {
-        console.error("Invalid AI response structure:", data);
-        throw new Error("Invalid response from AI");
-      }
-
-      setResult(data.choices[0].message.content);
+      
+      // Clean the response of any CSS class references
+      mockResponse = cleanCssFromText(mockResponse);
+      
+      setResult(mockResponse);
     } catch (error) {
-      console.error('Content generation error:', error);
+      console.error("Error generating content:", error);
       toast({
         variant: "destructive",
         title: "Generation Failed",
-        description: error instanceof Error ? error.message : "Failed to generate content. Please check that OPENAI_API_KEY is set in your Supabase Edge Function secrets.",
+        description: "There was an error generating your content. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -134,128 +109,129 @@ export const ContentCreator = () => {
   const copyToClipboard = () => {
     navigator.clipboard.writeText(result);
     toast({
-      title: "Copied!",
-      description: "Content copied to clipboard",
+      title: "Copied to Clipboard",
+      description: "Content has been copied to your clipboard"
     });
   };
 
   const saveToLibrary = () => {
     toast({
-      title: "Content Saved",
-      description: "Content has been saved to your library",
+      title: "Saved to Library",
+      description: "Content has been saved to your library"
     });
   };
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>Content Details</CardTitle>
-          <CardDescription>
-            Tell SageBot what kind of content you want to create
-          </CardDescription>
+          <CardTitle>Content Generator</CardTitle>
+          <CardDescription>Create AI-generated content in seconds</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="topic">Topic or Niche</Label>
-            <Input 
-              id="topic" 
-              name="topic" 
-              placeholder="e.g., Sustainable fashion, Productivity tips, Home workouts" 
-              value={formData.topic}
-              onChange={handleChange}
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="contentType">Content Type</Label>
-            <Select 
-              value={formData.contentType} 
-              onValueChange={(value) => handleSelectChange("contentType", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select content type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="instagram">Instagram Post</SelectItem>
-                <SelectItem value="tiktok">TikTok Video</SelectItem>
-                <SelectItem value="youtube">YouTube Video</SelectItem>
-                <SelectItem value="blog">Blog Post</SelectItem>
-                <SelectItem value="twitter">Twitter/X Post</SelectItem>
-                <SelectItem value="linkedin">LinkedIn Post</SelectItem>
-                <SelectItem value="facebook">Facebook Post</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="tone">Tone of Voice</Label>
-            <Select 
-              value={formData.tone} 
-              onValueChange={(value) => handleSelectChange("tone", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select tone" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="casual">Casual & Conversational</SelectItem>
-                <SelectItem value="professional">Professional & Informative</SelectItem>
-                <SelectItem value="humorous">Humorous & Entertaining</SelectItem>
-                <SelectItem value="inspirational">Inspirational & Motivational</SelectItem>
-                <SelectItem value="educational">Educational & Helpful</SelectItem>
-                <SelectItem value="storytelling">Storytelling & Narrative</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="contentLength">Content Length</Label>
-            <Select 
-              value={formData.contentLength} 
-              onValueChange={(value) => handleSelectChange("contentLength", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select length" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="short">Short (50-100 words)</SelectItem>
-                <SelectItem value="medium">Medium (100-300 words)</SelectItem>
-                <SelectItem value="long">Long (300+ words)</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="additionalInfo">Additional Requirements (Optional)</Label>
-            <Textarea 
-              id="additionalInfo" 
-              name="additionalInfo" 
-              placeholder="Any specific themes, keywords, or restrictions?" 
-              value={formData.additionalInfo}
-              onChange={handleChange}
-              rows={3}
-            />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-3 mb-4">
-              <TabsTrigger value="ideas" className="text-xs flex gap-1 items-center">
-                <Lightbulb className="w-3 h-3" />
-                Content Ideas
+        <CardContent>
+          <Tabs onValueChange={setActiveTab} value={activeTab}>
+            <TabsList className="grid grid-cols-3 mb-6">
+              <TabsTrigger value="ideas" className="flex items-center gap-1">
+                <Lightbulb className="w-4 h-4" />
+                Ideas
               </TabsTrigger>
-              <TabsTrigger value="hooks" className="text-xs flex gap-1 items-center">
-                <TrendingUp className="w-3 h-3" />
-                Viral Hooks
+              <TabsTrigger value="hooks" className="flex items-center gap-1">
+                <TrendingUp className="w-4 h-4" />
+                Hooks
               </TabsTrigger>
-              <TabsTrigger value="hashtags" className="text-xs flex gap-1 items-center">
-                <Hash className="w-3 h-3" />
+              <TabsTrigger value="hashtags" className="flex items-center gap-1">
+                <Hash className="w-4 h-4" />
                 Hashtags
               </TabsTrigger>
             </TabsList>
+          </Tabs>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="topic">Topic or Subject</Label>
+              <Input 
+                id="topic"
+                name="topic"
+                value={formData.topic}
+                onChange={handleChange}
+                placeholder="What is your content about?"
+              />
+            </div>
             
-            <Button 
-              onClick={generateContent} 
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="contentType">Content Type</Label>
+                <Select 
+                  onValueChange={(value) => handleSelectChange("contentType", value)}
+                  defaultValue={formData.contentType}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select content type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="instagram">Instagram</SelectItem>
+                    <SelectItem value="tiktok">TikTok</SelectItem>
+                    <SelectItem value="blog">Blog Post</SelectItem>
+                    <SelectItem value="twitter">Twitter/X</SelectItem>
+                    <SelectItem value="linkedin">LinkedIn</SelectItem>
+                    <SelectItem value="facebook">Facebook</SelectItem>
+                    <SelectItem value="youtube">YouTube</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="tone">Tone</Label>
+                <Select 
+                  onValueChange={(value) => handleSelectChange("tone", value)}
+                  defaultValue={formData.tone}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select tone" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="casual">Casual</SelectItem>
+                    <SelectItem value="professional">Professional</SelectItem>
+                    <SelectItem value="humorous">Humorous</SelectItem>
+                    <SelectItem value="inspirational">Inspirational</SelectItem>
+                    <SelectItem value="educational">Educational</SelectItem>
+                    <SelectItem value="persuasive">Persuasive</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="contentLength">Content Length</Label>
+              <Select 
+                onValueChange={(value) => handleSelectChange("contentLength", value)}
+                defaultValue={formData.contentLength}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select length" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="short">Short</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="long">Long</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="additionalInfo">Additional Details (Optional)</Label>
+              <Textarea 
+                id="additionalInfo"
+                name="additionalInfo"
+                value={formData.additionalInfo}
+                onChange={handleChange}
+                placeholder="Any specific requirements or additional context..."
+                rows={3}
+              />
+            </div>
+            
+            <Button
+              onClick={generateContent}
               disabled={loading || !formData.topic}
               className="w-full"
             >
@@ -265,70 +241,68 @@ export const ContentCreator = () => {
                   Generating...
                 </>
               ) : (
-                `Generate ${activeTab === "ideas" ? "Content Ideas" : activeTab === "hooks" ? "Viral Hooks" : "Hashtags"}`
+                "Generate Content"
               )}
             </Button>
-          </Tabs>
-        </CardFooter>
+          </div>
+        </CardContent>
       </Card>
       
       <Card>
         <CardHeader>
-          <CardTitle>
-            {activeTab === "ideas" 
-              ? "Content Ideas" 
-              : activeTab === "hooks" 
-                ? "Viral Hooks" 
-                : "Hashtag Suggestions"}
-          </CardTitle>
+          <CardTitle>Generated Content</CardTitle>
           <CardDescription>
-            {activeTab === "ideas" 
-              ? "Creative content ideas based on your topic" 
-              : activeTab === "hooks" 
-                ? "Attention-grabbing hooks for your content" 
-                : "Relevant hashtags to boost your content's reach"}
+            {activeTab === "ideas" && "Creative content ideas for your topic"}
+            {activeTab === "hooks" && "Attention-grabbing hooks for your content"}
+            {activeTab === "hashtags" && "Trending and relevant hashtags"}
           </CardDescription>
         </CardHeader>
-        <CardContent className="min-h-[300px]">
-          {loading ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary mb-4" />
-                <p className="text-sm text-gray-500">Generating amazing content...</p>
+        <CardContent>
+          <div className={`bg-gray-50 rounded-lg p-4 min-h-[200px] ${loading ? 'flex items-center justify-center' : ''}`}>
+            {loading ? (
+              <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            ) : result ? (
+              <div className="bg-gray-50 rounded-lg p-4 min-h-[200px] whitespace-pre-wrap">
+                {result.split('\n').map((line, i) => {
+                  // Format based on content without using CSS classes
+                  if (line.startsWith('# ')) {
+                    return <h1 key={i} style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem' }}>{line.substring(2)}</h1>;
+                  } else if (line.startsWith('## ')) {
+                    return <h2 key={i} style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem', marginTop: '1rem' }}>{line.substring(3)}</h2>;
+                  } else if (line.startsWith('- ')) {
+                    return <div key={i} style={{ paddingLeft: '1rem', marginBottom: '0.25rem' }}>• {line.substring(2)}</div>;
+                  } else if (/^\d+\.\s/.test(line)) {
+                    return <div key={i} style={{ paddingLeft: '1rem', marginBottom: '0.25rem' }}>{line}</div>;
+                  } else if (line.startsWith('[')) {
+                    return <div key={i} style={{ fontWeight: 'bold', marginTop: '0.5rem' }}>{line}</div>;
+                  } else if (line === '') {
+                    return <div key={i} style={{ height: '0.5rem' }}></div>;
+                  } else {
+                    return <p key={i} style={{ marginBottom: '0.5rem' }}>{line}</p>;
+                  }
+                })}
               </div>
-            </div>
-          ) : result ? (
-            <div className="prose prose-sm max-w-none">
-              <div dangerouslySetInnerHTML={{ 
-                __html: result.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>') 
-              }} />
-            </div>
-          ) : (
-            <div className="flex items-center justify-center h-full text-center p-6">
-              <p className="text-gray-500">
-                Fill in the details and click generate to create 
-                {activeTab === "ideas" 
-                  ? " content ideas" 
-                  : activeTab === "hooks" 
-                    ? " viral hooks" 
-                    : " hashtag suggestions"}
-              </p>
-            </div>
-          )}
+            ) : (
+              <div className="text-center text-gray-500 h-full flex flex-col items-center justify-center p-12">
+                <Sparkles className="h-8 w-8 mb-2 text-gray-400" />
+                <p>Generate content using the form above</p>
+              </div>
+            )}
+          </div>
         </CardContent>
         {result && (
-          <CardFooter className="flex justify-between">
-            <Button variant="outline" size="sm" onClick={regenerateContent}>
-              <RotateCcw className="mr-2 h-3 w-3" />
+          <CardFooter className="flex justify-between gap-2 border-t px-6 py-4">
+            <Button variant="outline" onClick={regenerateContent} disabled={loading}>
+              <RotateCcw className="mr-2 h-4 w-4" />
               Regenerate
             </Button>
-            <div className="space-x-2">
-              <Button variant="outline" size="sm" onClick={copyToClipboard}>
-                <Copy className="mr-2 h-3 w-3" />
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={copyToClipboard}>
+                <Copy className="mr-2 h-4 w-4" />
                 Copy
               </Button>
-              <Button variant="outline" size="sm" onClick={saveToLibrary}>
-                <Save className="mr-2 h-3 w-3" />
+              <Button onClick={saveToLibrary}>
+                <Save className="mr-2 h-4 w-4" />
                 Save
               </Button>
             </div>
